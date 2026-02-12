@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recherche de stage</title>
+  <link rel="stylesheet" href="./style.css?v=1" />
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="container nav-content">
+      <div class="logo">Stages</div>
+
+      <nav aria-label="Navigation principale">
+        <ul class="nav-links">
+          <li><a href="recherche.html" aria-current="page">Recherche de stage</a></li>
+          <li><a href="recherche-entreprise.html">Recherche d’entreprise</a></li>
+        </ul>
+      </nav>
+
+      <details class="menu-compte">
+        <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
+          <span class="avatar-compte" aria-hidden="true"></span>
+          <span>Compte</span>
+        </summary>
+
+        <div class="liste-compte" role="menu">
+          <a href="login.html" role="menuitem">Se connecter</a>
+          <a href="profil.html" role="menuitem">Mon profil</a>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="page-contenu">
+    <section class="entete-page">
+      <div class="container">
+        <h2>Recherche de stage</h2>
+        <p>Utilisez les filtres pour trouver une offre.</p>
+      </div>
+    </section>
+
+    <section class="zone-principale">
+      <div class="container">
+        <div class="bloc-contenu bloc-sans-survol">
+
+          <div class="mise-en-page-recherche">
+
+            <aside class="zone-filtres" aria-label="Filtres de recherche">
+              <h3>Filtres</h3>
+
+              <form action="#" method="get" class="formulaire">
+                <div class="ligne-champ">
+                  <label for="motscles">Mots-clés</label>
+                  <input id="motscles" name="q" type="search" placeholder="ex : dev web, data..." />
+                </div>
+
+                <div class="ligne-champ">
+                  <label for="ville">Ville</label>
+                  <input id="ville" name="ville" type="text" placeholder="ex : Toulouse" />
+                </div>
+
+                <div class="ligne-champ">
+                  <label for="type">Type</label>
+                  <select id="type" name="type">
+                    <option value="">Tous</option>
+                    <option value="stage">Stage</option>
+                    <option value="alternance">Alternance</option>
+                  </select>
+                </div>
+
+                <div class="ligne-champ">
+                  <label for="duree">Durée</label>
+                  <select id="duree" name="duree">
+                    <option value="">Toutes</option>
+                    <option value="2-3">2 à 3 mois</option>
+                    <option value="4-6">4 à 6 mois</option>
+                    <option value="6+">6 mois et +</option>
+                  </select>
+                </div>
+
+                <div class="ligne-champ">
+                  <label for="remuneration">Rémunération (min.)</label>
+                  <select id="remuneration" name="remuneration">
+                    <option value="">Peu importe</option>
+                    <option value="0">0 €</option>
+                    <option value="500">500 €</option>
+                    <option value="800">800 €</option>
+                    <option value="1000">1000 €</option>
+                  </select>
+                </div>
+
+                <div class="actions-formulaire">
+                  <button class="btn-simple" type="submit">Appliquer</button>
+                  <button class="btn-simple secondary" type="reset">Réinitialiser</button>
+                </div>
+              </form>
+            </aside>
+
+            <section class="zone-resultats" aria-label="Résultats">
+              <h3>Offres</h3>
+              <p class="hint">Les offres s’affichent ici (exemple).</p>
+
+              <article class="offre">
+                <div class="entete-offre">
+                  <h4>Offre 1 – Stage Développeur Web</h4>
+                  <span class="badge">Toulouse</span>
+                </div>
+                <p class="texte-offre">Missions : intégration, API, amélioration UI. Compétences : HTML/CSS.</p>
+                <div class="actions-offre">
+                  <a class="btn-simple" href="#">Afficher</a>
+                </div>
+              </article>
+
+              <article class="offre">
+                <div class="entete-offre">
+                  <h4>Offre 2 – Stage Data / BI</h4>
+                  <span class="badge">Lyon</span>
+                </div>
+                <p class="texte-offre">Missions : reporting, tableaux de bord. Compétences : SQL, Excel.</p>
+                <div class="actions-offre">
+                  <a class="btn-simple" href="#">Afficher</a>
+                </div>
+              </article>
+
+              <article class="offre">
+                <div class="entete-offre">
+                  <h4>Offre 3 – Stage Cybersécurité</h4>
+                  <span class="badge">Paris</span>
+                </div>
+                <p class="texte-offre">Missions : audit, sensibilisation. Compétences : réseau, Linux.</p>
+                <div class="actions-offre">
+                  <a class="btn-simple" href="#">Afficher</a>
+                </div>
+              </article>
+
+            </section>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Mentions légales, cookies, différents liens du site</p>
+  </footer>
+
+</body>
+</html>

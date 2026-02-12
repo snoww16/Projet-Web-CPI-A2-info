@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion / Création</title>
+  <link rel="stylesheet" href="./style.css?v=1" />
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="container nav-content">
+        <div class="logo">Stages</div>
+
+        <nav aria-label="Navigation principale">
+            <ul class="nav-links">
+            <li><a href="recherche.html">Recherche de stage</a></li>
+            <li><a href="recherche-entreprise.html">Recherche d’entreprise</a></li>
+            </ul>
+        </nav>
+
+        <details class="menu-compte">
+            <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
+            <span class="avatar-compte" aria-hidden="true"></span>
+            <span>Compte</span>
+            </summary>
+
+            <div class="liste-compte" role="menu">
+            <a href="login.html" role="menuitem" aria-current="page">Se connecter</a>
+            <a href="profil.html" role="menuitem">Mon profil</a>
+            </div>
+        </details>
+        </div>
+    </header>
+
+    <main class="page-contenu">
+        <section class="entete-page">
+            <div class="container">
+                <h2>Connexion </h2>
+                <p>Choisissez votre espace.</p>
+            </div>
+        </section>
+
+        <section class="zone-principale">
+        <div class="container">
+            <div class="bloc-contenu bloc-sans-survol">
+
+                <section class="choix-profil" aria-label="Choix du type de compte">
+
+                    <input type="radio" name="profil" id="profil-etudiant" checked />
+                    <input type="radio" name="profil" id="profil-pilote" />
+                    <input type="radio" name="profil" id="profil-admin" />
+
+                    <div class="onglets-profil" role="tablist" aria-label="Type de compte">
+                    <label for="profil-etudiant" role="tab">Étudiant</label>
+                    <label for="profil-pilote" role="tab">Pilote</label>
+                    <label for="profil-admin" role="tab">Administrateur</label>
+                    </div>
+
+                    <div class="panneaux">
+
+                        <section class="panneau" id="panneau-etudiant" aria-label="Connexion étudiant">
+                            <h3>Étudiant</h3>
+
+                            <form action="#" method="post" class="formulaire">
+                                <div class="ligne-champ">
+                                    <label for="email-etudiant">Adresse e-mail</label>
+                                    <input id="email-etudiant" name="email" type="email" placeholder="ex : prenom.nom@exemple.com" required />
+                                </div>
+
+                                <div class="ligne-champ">
+                                    <label for="mdp-etudiant">Mot de passe</label>
+                                    <input id="mdp-etudiant" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
+                                </div>
+
+                                <div class="actions-formulaire">
+                                    <button class="btn-simple" type="submit">Se connecter</button>
+                                    <a class="link" href="#">Mot de passe oublié ?</a>
+                                </div>
+
+                            </form>
+                    </section>
+
+                        <section class="panneau" id="panneau-pilote" aria-label="Connexion pilote">
+                            <h3>Pilote</h3>
+
+                            <form action="#" method="post" class="formulaire">
+                                <div class="ligne-champ">
+                                    <label for="email-pilote">Adresse e-mail</label>
+                                    <input id="email-pilote" name="email" type="email" placeholder="ex : pilote@cesi.fr" required />
+                                </div>
+
+                                <div class="ligne-champ">
+                                    <label for="mdp-pilote">Mot de passe</label>
+                                    <input id="mdp-pilote" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
+                                </div>
+
+                                <div class="actions-formulaire">
+                                    <button class="btn-simple" type="submit">Se connecter</button>
+                                    <a class="link" href="#">Mot de passe oublié ?</a>
+                                </div>
+
+                            </form>
+                        </section>
+
+                        <section class="panneau" id="panneau-admin" aria-label="Connexion administrateur">
+                            <h3>Administrateur</h3>
+
+                            <form action="#" method="post" class="formulaire">
+                                <div class="ligne-champ">
+                                    <label for="email-admin">Adresse e-mail</label>
+                                    <input id="email-admin" name="email" type="email" placeholder="ex : admin@cesi.fr" required />
+                                </div>
+
+                                <div class="ligne-champ">
+                                    <label for="mdp-admin">Mot de passe</label>
+                                    <input id="mdp-admin" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
+                                </div>
+
+                                <div class="actions-formulaire">
+                                    <button class="btn-simple" type="submit">Se connecter</button>
+                                    <a class="link" href="#">Mot de passe oublié ?</a>
+                                </div>
+                                
+                            </form>
+                        </section>
+                    </div>
+                </section>
+            </div>
+        </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Mentions légales, cookies, différents liens du site</p>
+    </footer>
+
+</body>
+</html>
