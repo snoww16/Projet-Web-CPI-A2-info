@@ -38,7 +38,6 @@
         <section class="entete-page">
             <div class="container">
                 <h2>Connexion </h2>
-                <p>Choisissez votre espace.</p>
             </div>
         </section>
 
@@ -46,22 +45,7 @@
         <div class="container">
             <div class="bloc-contenu bloc-sans-survol">
 
-                <section class="choix-profil" aria-label="Choix du type de compte">
-
-                    <input type="radio" name="profil" id="profil-etudiant" checked />
-                    <input type="radio" name="profil" id="profil-pilote" />
-                    <input type="radio" name="profil" id="profil-admin" />
-
-                    <div class="onglets-profil" role="tablist" aria-label="Type de compte">
-                    <label for="profil-etudiant" role="tab">Étudiant</label>
-                    <label for="profil-pilote" role="tab">Pilote</label>
-                    <label for="profil-admin" role="tab">Administrateur</label>
-                    </div>
-
-                    <div class="panneaux">
-
-                        <section class="panneau" id="panneau-etudiant" aria-label="Connexion étudiant">
-                            <h3>Étudiant</h3>
+                        <section id="panneau-etudiant" aria-label="Connexion étudiant">
 
                             <form action="#" method="post" class="formulaire">
                                 <div class="ligne-champ">
@@ -78,54 +62,7 @@
                                     <button class="btn-simple" type="submit">Se connecter</button>
                                     <a class="link" href="#">Mot de passe oublié ?</a>
                                 </div>
-
                             </form>
-                    </section>
-
-                        <section class="panneau" id="panneau-pilote" aria-label="Connexion pilote">
-                            <h3>Pilote</h3>
-
-                            <form action="#" method="post" class="formulaire">
-                                <div class="ligne-champ">
-                                    <label for="email-pilote">Adresse e-mail</label>
-                                    <input id="email-pilote" name="email" type="email" placeholder="ex : pilote@cesi.fr" required />
-                                </div>
-
-                                <div class="ligne-champ">
-                                    <label for="mdp-pilote">Mot de passe</label>
-                                    <input id="mdp-pilote" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
-                                </div>
-
-                                <div class="actions-formulaire">
-                                    <button class="btn-simple" type="submit">Se connecter</button>
-                                    <a class="link" href="#">Mot de passe oublié ?</a>
-                                </div>
-
-                            </form>
-                        </section>
-
-                        <section class="panneau" id="panneau-admin" aria-label="Connexion administrateur">
-                            <h3>Administrateur</h3>
-
-                            <form action="#" method="post" class="formulaire">
-                                <div class="ligne-champ">
-                                    <label for="email-admin">Adresse e-mail</label>
-                                    <input id="email-admin" name="email" type="email" placeholder="ex : admin@cesi.fr" required />
-                                </div>
-
-                                <div class="ligne-champ">
-                                    <label for="mdp-admin">Mot de passe</label>
-                                    <input id="mdp-admin" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
-                                </div>
-
-                                <div class="actions-formulaire">
-                                    <button class="btn-simple" type="submit">Se connecter</button>
-                                    <a class="link" href="#">Mot de passe oublié ?</a>
-                                </div>
-                                
-                            </form>
-                        </section>
-                    </div>
                 </section>
             </div>
         </div>

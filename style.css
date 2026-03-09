@@ -205,22 +205,11 @@ a {
   color: rgba(233, 238, 247, 0.78);
 }
 
-.choix-profil {
-  display: grid;
-  gap: 18px;
-}
-
 .onglets-profil {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
-}
-
-.choix-profil input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .onglets-profil label {
@@ -241,9 +230,7 @@ a {
   background: rgba(255, 255, 255, 0.09);
 }
 
-#profil-etudiant:checked + label,
-#profil-pilote:checked + label,
-#profil-admin:checked + label {
+#profil-etudiant:checked + label{
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.22);
 }
@@ -257,14 +244,6 @@ a {
 }
 
 #profil-etudiant:checked ~ .panneaux #panneau-etudiant {
-  display: block;
-}
-
-#profil-pilote:checked ~ .panneaux #panneau-pilote {
-  display: block;
-}
-
-#profil-admin:checked ~ .panneaux #panneau-admin {
   display: block;
 }
 
