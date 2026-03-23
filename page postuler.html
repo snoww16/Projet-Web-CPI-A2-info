@@ -4,33 +4,58 @@
     <meta charset="UTF-8">
     <title>Postuler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="global.css">
 </head>
 <body>
 
-<header class="hero">
+<header class="navbar">
+        <div class="container nav-content">
+        <div class="logo">CESI Ton Stage</div>
+
+        <nav aria-label="Navigation principale">
+            <ul class="nav-links">
+            <li><a href="recherche.html">Recherche de stage</a></li>
+            <li><a href="recherche-entreprise.html">Recherche d’entreprise</a></li>
+            </ul>
+        </nav>
+
+        <details class="menu-compte">
+            <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
+            <span class="avatar-compte" aria-hidden="true"></span>
+            <span>Compte</span>
+            </summary>
+
+            <div class="liste-compte" role="menu">
+            <a href="login.html" role="menuitem" aria-current="page">Se connecter</a>
+            <a href="profil.html" role="menuitem">Mon profil</a>
+            </div>
+        </details>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
     <div class="hero-content">
         <h2>Postuler à une offre</h2>
         <h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>
         <div class="cards">
-        <div class="card">
-        <h3>Informations</h3>
-        <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"</p>
-    </div>
-    </div>
-    </div>
-</header>
+            <div class="card">
+                <h3>Informations</h3>
+                <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"</p>
+            </div>
+        </div>
+</section>
 
 <section id="CV" class="section reveal">
     <div class="container">
         <h2>Ajouter CV</h2>
         <div>
             <div class="cardCVLM">
-            <div class="btn">Déposer mon CV</div>
-        <p style="margin-left: 150px; margin-top: -50px;">
-            Déposez votre CV sous format pdf ou docx.
-        </p>
-        </div>
+                <div class="btn">Déposer mon CV</div>
+                <p style="margin-left: 150px; margin-top: -50px;">
+                    Déposez votre CV sous format pdf ou docx.
+                </p>
+            </div>
         </div>
     </div>
 </section>
@@ -38,15 +63,14 @@
 <section id="LM" class="section alt reveal">
     <div class="container">
         <h2>Ajouter lettre de motivation</h2>
-                <div>
+        <div>
             <div class="cardCVLM">
-            <div class="btn">Déposer lettre de motivation</div>
-        <p style="margin-left: 150px; margin-top: -50px;">
-            Déposez votre lettre de motivation sous format pdf ou docx.
-        </p>
+                <div class="btn">Déposer lettre de motivation</div>
+                <p style="margin-left: 150px; margin-top: -50px;">
+                    Déposez votre lettre de motivation sous format pdf ou docx.
+                </p>
+            </div>
         </div>
-        </div>
-
     </div>
 </section>
 
