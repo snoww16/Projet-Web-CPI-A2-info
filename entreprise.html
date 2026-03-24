@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Création entreprises</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="entreprise.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-content">
+        <div class="logo">CESI Ton Stage</div>
+
+        <nav aria-label="Navigation principale">
+            <ul class="nav-links">
+            <li><a href="recherche.html">Recherche de stage</a></li>
+            <li><a href="recherche-entreprise.html">Recherche d’entreprise</a></li>
+            </ul>
+        </nav>
+
+        <details class="menu-compte">
+            <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
+            <span class="avatar-compte" aria-hidden="true"></span>
+            <span>Compte</span>
+            </summary>
+
+            <div class="liste-compte" role="menu">
+            <a href="login.html" role="menuitem" aria-current="page">Se connecter</a>
+            <a href="profil.html" role="menuitem">Mon profil</a>
+            </div>
+        </details>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h2>Espace administration d'entreprises</h2>
+        <div class="cards">
+        <div class="card">
+        <h3>Créer</h3>
+        <p>Créer une entreprise</p>
+    </div>
+    <div class="card">
+        <h3>Modifier</h3>
+        <p>Modifier ou supprimer une entreprise.</p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 CESI | Projet Stage</p>
+</footer>
+
+<script>
+    const reveals = document.querySelectorAll(".reveal");
+
+    function revealOnScroll() {
+        reveals.forEach(section => {
+            const windowHeight = window.innerHeight;
+            const elementTop = section.getBoundingClientRect().top;
+
+            if (elementTop < windowHeight - 100) {
+                section.classList.add("active");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", revealOnScroll);
+</script>
+
+</body>
+</html>
