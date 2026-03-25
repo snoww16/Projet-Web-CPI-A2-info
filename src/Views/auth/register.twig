@@ -1,0 +1,50 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <h2>Créer un compte Étudiant</h2>
+    <p class="hint">Rejoignez CESI Ton Stage et trouvez l'offre qui vous correspond.</p>
+</div>
+
+<div class="container" style="max-width: 450px; margin-top: 20px;">
+    <div class="cardCVLM">
+        
+        {% if error %}
+        <div style="background-color: rgba(255, 77, 79, 0.1); color: #ff4d4f; border: 1px solid #ff4d4f; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/register" method="POST">
+            <div style="display: flex; gap: 15px;">
+                <div class="ligne-champ" style="flex: 1;">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+                <div class="ligne-champ" style="flex: 1;">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+            </div>
+
+            <div class="ligne-champ">
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="ligne-champ">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn-appliquer" style="width: 100%; margin-top: 15px;">S'inscrire</button>
+            
+            <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+                <p>Vous avez déjà un compte ? <a href="/login" style="color: #38bdf8; font-weight: bold;">Se connecter</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

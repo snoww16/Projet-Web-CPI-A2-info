@@ -1,0 +1,47 @@
+{% extends 'layout.twig' %}
+{% block title %}Gestion des {{ type }}{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <h2 style="text-transform: capitalize;">Gestion : {{ type }}</h2>
+    
+    {% if session.role == 1 or (session.role == 2 and type != 'pilotes') %}
+        <a href="/admin/{{ type }}/creer" class="btn-appliquer" style="margin-top: 15px; display: inline-block;">+ Créer nouveau</a>
+    {% endif %}
+</div>
+
+<div class="container" style="max-width: 900px;">
+    
+    {% for item in items %}
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 25px;">
+        
+        <div class="infos-entite">
+            <h3 style="margin: 0; font-size: 1.2rem;">{{ item.nom }}</h3>
+            <p class="hint" style="margin: 0;">ID: {{ item.id }}</p>
+        </div>
+
+        <div class="actions-entite" style="display: flex; align-items: center; gap: 10px;">
+            
+            <a href="/profil/{{ type }}/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; border-color: #38bdf8; color: #38bdf8; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
+                👁️ Afficher
+            </a>
+            
+            <a href="/admin/{{ type }}/modifier/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
+                ✏️ Modifier
+            </a>
+            
+            <form action="/admin/{{ type }}/supprimer/{{ item.id }}" method="POST" style="margin: 0; display: flex; align-items: center; height: 42px;" onsubmit="return confirm('⚠️ ATTENTION : Êtes-vous sûr de vouloir supprimer définitivement cet élément ? Cette action est irréversible.');">
+                <button type="submit" class="btn-simple" style="padding: 8px 15px; border-color: #ff6b6b; color: #ff6b6b; background: transparent; cursor: pointer; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
+                    🗑️ Supprimer
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+    {% else %}
+        <p style="text-align: center;">Aucune donnée trouvée.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}

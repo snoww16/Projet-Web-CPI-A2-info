@@ -1,0 +1,86 @@
+{% extends 'layout.twig' %}
+{% block title %}Créer : {{ type }}{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <h2 style="text-transform: capitalize;">Nouveau/Nouvelle {{ type|trim('s') }}</h2>
+    <p class="hint">Remplissez les informations ci-dessous pour créer cette entité.</p>
+</div>
+
+<div class="container" style="max-width: 600px;">
+    <div class="cardCVLM" style="padding: 30px;">
+        
+        <form action="/admin/{{ type }}/creer" method="POST">
+            
+            {% if type == 'etudiants' or type == 'pilotes' %}
+                <div class="ligne-champ">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="email">Adresse E-mail</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="password">Mot de passe temporaire</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            {% endif %}
+
+            {% if type == 'entreprises' %}
+                <div class="ligne-champ">
+                    <label for="nom">Nom de l'entreprise</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="description">Description courte</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="ligne-champ">
+                    <label for="email">E-mail de contact</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="telephone">Téléphone de contact</label>
+                    <input type="tel" id="telephone" name="telephone">
+                </div>
+            {% endif %}
+
+            {% if type == 'offres' %}
+                <div class="ligne-champ">
+                    <label for="titre">Titre de l'offre</label>
+                    <input type="text" id="titre" name="titre" required>
+                </div>
+                <div class="ligne-champ">
+                    <label for="description">Description des missions</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+                <div class="ligne-champ">
+                    <label for="competences">Compétences (séparées par des virgules)</label>
+                    <input type="text" id="competences" name="competences" placeholder="ex: PHP, SQL, JavaScript" required>
+                </div>
+                <div class="ligne-champ" style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label for="remuneration">Rémunération (€/mois)</label>
+                        <input type="number" id="remuneration" name="remuneration" step="10">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="date_debut">Date de début prévue</label>
+                        <input type="date" id="date_debut" name="date_debut" required>
+                    </div>
+                </div>
+                {% endif %}
+
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <a href="/admin/{{ type }}" class="btn-reset" style="flex: 1; text-align: center; padding: 12px;">Annuler</a>
+                <button type="submit" class="btn-appliquer" style="flex: 2; padding: 12px; font-size: 1.1rem;">Créer l'entité</button>
+            </div>
+            
+        </form>
+    </div>
+</div>
+{% endblock %}

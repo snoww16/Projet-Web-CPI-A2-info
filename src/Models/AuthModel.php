@@ -24,4 +24,22 @@ class AuthModel extends Model {
             die("Erreur SQL dans AuthModel : " . $e->getMessage());
         }
     }
+    public function register($nom, $prenom, $email, $password) {
+        // 1. On vérifie si l'email existe déjà dans la base
+        $check = $this->db->prepare("SELECT id_user FROM Utilisateur WHERE email = :email");
+        $check->execute(['email' => $email]);
+        if ($check->fetch()) {
+            return false; // L'email est déjà pris !
+        }
+
+        // 2. On insère le nouvel étudiant (id_role = 3)
+        $sql = "INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, id_role) VALUES (:nom, :prenom, :email, :mdp, 3)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'email' => $email,
+            'mdp' => $password
+        ]);
+    }
 }
