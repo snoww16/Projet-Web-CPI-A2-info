@@ -105,4 +105,29 @@ class OfferModel extends Model {
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['userId' => $userId, 'offreId' => $offreId]);
     }
+
+    // --- GESTION DES CANDIDATURES ---
+
+    // Vérifie si l'utilisateur a déjà postulé à cette offre
+    public function hasUserApplied($id_offre, $id_user) {
+        $sql = "SELECT COUNT(*) FROM Candidature WHERE id_offre = :id_offre AND id_user = :id_user";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_offre' => $id_offre, 'id_user' => $id_user]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    // Enregistre la candidature avec les chemins des fichiers
+    // Enregistre la candidature avec les chemins des fichiers et le message
+    public function applyForOffer($id_offre, $id_user, $cv_path, $lm_path, $message = '') {
+        $sql = "INSERT INTO Candidature (id_offre, id_user, date_candidature, cv_path, lm_path, message) 
+                VALUES (:id_offre, :id_user, CURDATE(), :cv_path, :lm_path, :message)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id_offre' => $id_offre,
+            'id_user' => $id_user,
+            'cv_path' => $cv_path,
+            'lm_path' => $lm_path,
+            'message' => $message
+        ]);
+    }
 }
