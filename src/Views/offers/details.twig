@@ -48,15 +48,15 @@
         {% endif %}
 
         <div class="texte-offre" style="margin-bottom: 40px;">
-            <h3 style="color: #38bdf8; margin-bottom: 15px; font-size: 1.4rem;">🎯 Vos Missions</h3>
+            <h3 style="color: #38bdf8; margin-bottom: 15px; font-size: 1.4rem;">Vos Missions</h3>
             <p style="white-space: pre-line; color: #cbd5e1; line-height: 1.6; font-size: 1.05rem; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">{{ offre.description ?? offre.offre_desc }}</p>
 
-            <h3 style="color: #38bdf8; margin-top: 35px; margin-bottom: 15px; font-size: 1.4rem;">🏢 À propos de {{ offre.entreprise_nom }}</h3>
+            <h3 style="color: #38bdf8; margin-top: 35px; margin-bottom: 15px; font-size: 1.4rem;">À propos de {{ offre.entreprise_nom }}</h3>
             <p style="color: #cbd5e1; line-height: 1.6; font-size: 1.05rem; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">{{ offre.entreprise_desc ?? 'Aucune description détaillée n\'a été fournie par l\'entreprise.' }}</p>
         </div>
         
         <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.3rem; padding: 15px 50px; border-radius: 30px; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">🚀 POSTULER À CETTE OFFRE</a>
+            <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.3rem; padding: 15px 50px; border-radius: 30px; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">POSTULER À CETTE OFFRE</a>
         </div>
     </div>
 </div>

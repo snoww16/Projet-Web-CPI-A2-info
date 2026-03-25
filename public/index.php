@@ -309,7 +309,8 @@ switch ($path) {
 
         echo $twig->render('admin/creer.twig', [
             'type' => $type_entite,
-            'entreprises' => $liste_entreprises
+            'entreprises' => $liste_entreprises,
+            'domaines' => $liste_domaines
         ]);
         break;
 
@@ -402,6 +403,7 @@ switch ($path) {
         if (preg_match('/^\/postuler\/([0-9]+)$/', $path, $matches)) {
             $offre_id = $matches[1];
             
+            // 1. L'utilisateur doit être connecté
             if (!isset($_SESSION['id_user'])) {
                 $_SESSION['redirect_to'] = $_SERVER['REQUEST_URI'];
                 header('Location: /login');
@@ -411,12 +413,70 @@ switch ($path) {
             $offerModel = new \App\Models\OfferModel();
             $vraie_offre = $offerModel->getOfferById($offre_id);
             
-            if ($vraie_offre) {
-                echo $twig->render('offers/postuler.twig', ['offre' => $vraie_offre]);
-            } else {
+            if (!$vraie_offre) {
                 http_response_code(404);
                 echo "<h1>Erreur 404 - Offre introuvable.</h1>";
+                break;
             }
+
+            // 2. Vérifier s'il a déjà postulé
+            $deja_postule = $offerModel->hasUserApplied($offre_id, $_SESSION['id_user']);
+            $erreur = null;
+            $succes = false;
+
+            // 3. Traitement du formulaire
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$deja_postule) {
+                
+                // On prépare le dossier où ranger les PDF
+                $uploadDir = __DIR__ . '/uploads/candidatures/';
+                
+                $cv_path = '';
+                $lm_path = '';
+
+                // Vérification du CV
+                if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
+                    $ext = strtolower(pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION));
+                    if ($ext !== 'pdf') { $erreur = "Le CV doit être au format PDF."; }
+                    else {
+                        // Utilisation de uniqid() pour une sécurité anti-conflit absolue
+                        $cv_name = 'cv_' . $_SESSION['id_user'] . '_' . $offre_id . '_' . uniqid() . '.pdf';
+                        move_uploaded_file($_FILES['cv']['tmp_name'], $uploadDir . $cv_name);
+                        $cv_path = '/uploads/candidatures/' . $cv_name;
+                    }
+                } else {
+                    $erreur = "Le CV est obligatoire.";
+                }
+
+                // Vérification de la Lettre de Motivation (LM)
+                if (!$erreur && isset($_FILES['lm']) && $_FILES['lm']['error'] === UPLOAD_ERR_OK) {
+                    $ext = strtolower(pathinfo($_FILES['lm']['name'], PATHINFO_EXTENSION));
+                    if ($ext !== 'pdf') { $erreur = "La lettre de motivation doit être au format PDF."; }
+                    else {
+                        $lm_name = 'lm_' . $_SESSION['id_user'] . '_' . $offre_id . '_' . uniqid() . '.pdf';
+                        move_uploaded_file($_FILES['lm']['tmp_name'], $uploadDir . $lm_name);
+                        $lm_path = '/uploads/candidatures/' . $lm_name;
+                    }
+                } else if (!$erreur) {
+                    $erreur = "La lettre de motivation est obligatoire.";
+                }
+
+                $message = isset($_POST['message']) ? trim($_POST['message']) : '';
+
+                // 4. Si tout est bon, on sauvegarde en Base de Données !
+                if (!$erreur) {
+                    $offerModel->applyForOffer($offre_id, $_SESSION['id_user'], $cv_path, $lm_path, $message);
+                    $succes = true;
+                    $deja_postule = true; // Pour cacher le formulaire
+                }
+            }
+
+            // 5. Affichage de la page
+            echo $twig->render('offers/postuler.twig', [
+                'offre' => $vraie_offre,
+                'deja_postule' => $deja_postule,
+                'erreur' => $erreur,
+                'succes' => $succes
+            ]);
             break;
         }
         
