@@ -54,6 +54,19 @@ switch ($path) {
         ]);
         break;
 
+    case '/a-propos':
+        echo $twig->render('a-propos.twig');
+        break;
+
+    // Route générique pour toutes les pages légales du footer
+    case '/mentions-legales':
+    case '/politique-confidentialite':
+    case '/contact':
+        // On récupère le nom de la page depuis l'URL pour faire un titre propre
+        $titre = ucfirst(str_replace(['/', '-'], ['', ' '], $path));
+        echo $twig->render('legal.twig', ['titre_page' => $titre]);
+        break;
+
     case '/offres':
         $offerModel = new OfferModel();
         
