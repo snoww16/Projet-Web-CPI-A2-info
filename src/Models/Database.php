@@ -1,41 +1,33 @@
 <?php
 namespace App\Models;
-/**
- * This interface represents a database.
- */
-interface Database {
-    /**
-     * Retrieves all records from the database.
-     *
-     * @return array An array of records.
-     */
-    public function getAllRecords();
 
-    /**
-     * Retrieves a specific record from the database.
-     *
-     * @param int $id The ID of the record to retrieve.
-     * @return mixed The retrieved record, null otherwise.
-     * throws FileDatabaseException if the database file is not accessible.
-     */
-    public function getRecord($id);
+use PDO;
+use PDOException;
 
-    /**
-     * Inserts a new record into the database.
-     *
-     * @param mixed $record The record to insert.
-     * @return int The last inserted index if the record was inserted successfully, -1 otherwise.
-     * throws FileDatabaseException if the database file is not accessible.
-     */
-    public function insertRecord($record);
+class Database {
+    private static $instance = null;
 
-    /**
-     * Updates a specific record in the database.
-     *
-     * @param int $id The ID of the record to update.
-     * @param mixed $record The updated record.
-     * @return bool True if the record was updated successfully, false otherwise.
-     * throws FileDatabaseException if the database file is not accessible.
-     */
-    public function updateRecord($id, $record);
+    // Tes vrais identifiants qui marchent
+    private const DB_USER = 'admin.web';
+    private const DB_PASS = 'uFU6rmQ.@zzGyZ1*'; 
+
+    private function __construct() {}
+
+    public static function getConnection(): PDO {
+        if (self::$instance === null) {
+            try {
+                // La connexion TCP qui traverse le pare-feu Fedora
+                $dsn = "mysql:host=127.0.0.1;port=3306;dbname=web4all;charset=utf8mb4";
+                
+                self::$instance = new PDO($dsn, self::DB_USER, self::DB_PASS, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]);
+            } catch (PDOException $e) {
+                die("Erreur de connexion : " . $e->getMessage());
+            }
+        }
+        return self::$instance;
+    }
 }

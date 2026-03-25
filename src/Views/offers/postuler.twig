@@ -1,65 +1,49 @@
 {% extends 'layout.twig' %}
-
-{% block title %}Postuler à une offre - CESI Ton Stage{% endblock %}
+{% block title %}Postuler - {{ offre.titre }}{% endblock %}
 
 {% block content %}
-<section class="entete-page alt-entete" style="text-align: left; padding: 60px 0;">
-    <div class="container">
-        <a href="/offres" class="btn-simple" style="margin-bottom: 20px;">← Retour</a>
-        <h1>{{ offre.entreprise_nom }}</h1>
-        <h2>Postuler à l'offre : {{ offre.titre }}</h2>
-    </div>
-</section>
+<div class="entete-page">
+    <h2>Envoyer ma candidature</h2>
+    <p class="hint">Pour l'offre : <strong>{{ offre.titre }}</strong> chez <strong>{{ offre.entreprise_nom }}</strong></p>
+</div>
 
-<section class="zone-principale">
-    <div class="container">
-        <div class="mise-en-page-postuler">
-
-            <aside class="bloc-infos-offre">
-                <div class="card">
-                    <h3>Informations de l'offre</h3>
-                    <p>{{ offre.description_detaillee }}</p>
-                    <p class="hint" style="margin-top: 20px;">N'oubliez pas d'ajouter un message personnalisé pour augmenter vos chances.</p>
-                </div>
-            </aside>
-
-            <section class="zone-formulaire-candidature">
-                {# On vérifie si l'utilisateur est connecté et étudiant #}
-                {% if is_logged_in %}
-                    <form action="/postuler-submit" method="post" enctype="multipart/form-data" class="formulaire">
-                        <input type="hidden" name="offre_id" value="{{ offre.id }}" />
-                        
-                        <div class="cardCVLM">
-                            <h3>Ajouter CV</h3>
-                            <input type="file" name="cv" accept=".pdf,.doc,.docx" required class="btn-file-custom">
-                            <p class="hint">Format PDF ou DOCX uniquement.</p>
-                        </div>
-
-                        <div class="cardCVLM">
-                            <h3>Ajouter lettre de motivation</h3>
-                            <input type="file" name="lm" accept=".pdf,.doc,.docx" required class="btn-file-custom">
-                            <p class="hint">Format PDF ou DOCX uniquement.</p>
-                        </div>
-
-                        <div class="card message-bloc">
-                            <h3>Ajouter message personnalisé</h3>
-                            <div class="ligne-champ">
-                                <textarea name="message" placeholder="Bonjour, je suis très intéressé par cette offre car..." rows="6"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="action-postuler">
-                            <button type="submit" class="btn-simple primary" style="width: 100%; font-size: 1.1rem; padding: 16px;">POSTULER</button>
-                        </div>
-                    </form>
-                {% else %}
-                    <div class="card" style="text-align: center; background: rgba(255, 100, 100, 0.1);">
-                        <h3>Vous devez être connecté en tant qu'étudiant pour postuler.</h3>
-                        <a href="/login" class="btn-simple primary" style="margin-top: 20px;">Se connecter</a>
-                    </div>
-                {% endif %}
-            </section>
+<div class="container" style="max-width: 600px;">
+    <div class="cardCVLM" style="padding: 30px;">
+        
+        <div style="background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; padding: 15px 20px; border-radius: 0 8px 8px 0; margin-bottom: 25px;">
+            <h4 style="color: #38bdf8; margin-bottom: 8px; font-size: 1.1rem;">Que se passe-t-il ensuite ?</h4>
+            <p style="font-size: 0.95rem; color: #e9eef7; line-height: 1.5;">
+                Votre dossier sera transmis en toute sécurité au service recrutement de <strong>{{ offre.entreprise_nom }}</strong>. 
+                Si votre profil correspond à leurs attentes, un responsable vous contactera directement sous 72h pour planifier un premier entretien. 
+                Vérifiez bien que votre CV est à jour !
+            </p>
         </div>
+
+        <form action="/candidature/envoyer" method="POST" enctype="multipart/form-data">
+            
+            <input type="hidden" name="id_offre" value="{{ offre.id }}">
+
+            <div class="ligne-champ" style="margin-bottom: 20px;">
+                <label for="cv">Votre CV (Format PDF)</label>
+                <input type="file" id="cv" name="cv" accept=".pdf" required class="btn-file-custom" style="padding-top: 10px;">
+            </div>
+            
+            <div class="ligne-champ" style="margin-bottom: 20px;">
+                <label for="lm">Lettre de motivation (Format PDF)</label>
+                <input type="file" id="lm" name="lm" accept=".pdf" required class="btn-file-custom" style="padding-top: 10px;">
+            </div>
+
+            <div class="ligne-champ" style="margin-bottom: 25px;">
+                <label for="message" style="font-size: 1.1rem; color: #38bdf8;">Ajouter un message (Optionnel)</label>
+                <p class="hint" style="margin-bottom: 10px;">Entrez un message personnalisé pour l'employeur afin d'appuyer votre candidature.</p>
+                <textarea id="message" name="message" rows="5" placeholder="Votre message personnalisé ici..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <a href="/offre/{{ offre.id }}" class="btn-reset" style="flex: 1; text-align: center; padding: 12px;">Annuler</a>
+                <button type="submit" class="btn-appliquer" style="flex: 2; padding: 12px; font-size: 1.1rem;">Envoyer ma candidature</button>
+            </div>
+        </form>
     </div>
-</section>
+</div>
 {% endblock %}

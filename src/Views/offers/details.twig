@@ -1,0 +1,30 @@
+{% extends 'layout.twig' %}
+{% block title %}{{ offre.titre }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin-top: 40px;">
+    <div class="bloc-infos-offre card" style="padding: 40px;">
+        
+        <div style="margin-bottom: 25px;">
+            <h2 style="color: #38bdf8; margin-bottom: 5px; font-size: 2.2rem;">{{ offre.titre }}</h2>
+            <h3 style="color: #e9eef7; margin-bottom: 15px;">{{ offre.entreprise_nom }}</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="badge">📍 {{ offre.ville }}</span>
+                {% if offre.remuneration %}<span class="badge">💰 {{ offre.remuneration }} €/mois</span>{% endif %}
+            </div>
+        </div>
+
+        <div class="texte-offre">
+            <h4 style="color: #38bdf8; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1);">Missions</h4>
+            <p style="white-space: pre-line; margin-bottom: 25px;">{{ offre.offre_desc }}</p>
+
+            <h4 style="color: #38bdf8; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1);">À propos de {{ offre.entreprise_nom }}</h4>
+            <p style="margin-bottom: 30px;">{{ offre.entreprise_desc }}</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.2rem; padding: 15px 40px;">Postuler à cette offre</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

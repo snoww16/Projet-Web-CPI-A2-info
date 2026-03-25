@@ -29,8 +29,28 @@
                             <input id="motscles" name="q" type="search" placeholder="ex : dev web, data..." />
                         </div>
                         <div class="ligne-champ">
-                            <label for="ville">Localisation</label>
-                            <input id="ville" name="ville" type="text" placeholder="ex : Toulouse" />
+                            <label for="ville">Ville</label>
+                            <select id="ville" name="ville">
+                                <option value="">Toutes les villes</option>
+                                <option value="Angoulême" {{ queryParams.ville == 'Angoulême' ? 'selected' : '' }}>Angoulême</option>
+                                <option value="Bordeaux" {{ queryParams.ville == 'Bordeaux' ? 'selected' : '' }}>Bordeaux</option>
+                                <option value="Lyon" {{ queryParams.ville == 'Lyon' ? 'selected' : '' }}>Lyon</option>
+                                <option value="Paris" {{ queryParams.ville == 'Paris' ? 'selected' : '' }}>Paris</option>
+                                <option value="Toulouse" {{ queryParams.ville == 'Toulouse' ? 'selected' : '' }}>Toulouse</option>
+                                <option value="Nantes" {{ queryParams.ville == 'Nantes' ? 'selected' : '' }}>Nantes</option>
+                            </select>
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="type_contrat">Contrat</label>
+                            <select id="type_contrat" name="type_contrat">
+                                <option value="">Tous</option>
+                                <option value="Stage" {{ queryParams.type_contrat == 'Stage' ? 'selected' : '' }}>Stage</option>
+                                <option value="Alternance" {{ queryParams.type_contrat == 'Alternance' ? 'selected' : '' }}>Alternance</option>
+                            </select>
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="domaine">Domaine</label>
+                            <input type="text" id="domaine" name="domaine" placeholder="ex: Informatique" value="{{ queryParams.domaine }}">
                         </div>
                         <div class="ligne-champ">
                             <label for="duree">Durée</label>
@@ -41,8 +61,8 @@
                             <input id="date-debut" name="date_debut" type="date" />
                         </div>
                         <div class="actions-formulaire">
-                            <button class="btn-simple" type="submit">Appliquer</button>
-                            <button class="btn-simple secondary" type="reset">Réinitialiser</button>
+                            <button class="btn-appliquer" type="submit">Appliquer</button>
+                            <button class="btn-reset" type="reset">Réinitialiser</button>
                         </div>
                     </form>
                 </aside>
@@ -56,7 +76,9 @@
                                 <h4>{{ offre.titre }}</h4>
                                 <span class="badge">{{ offre.ville }}</span>
                             </div>
-                            <button class="wishlist-btn" aria-label="Ajouter à la wishlist">♥</button>
+                            <a href="/wishlist/toggle?id={{ offre.id }}" class="wishlist-btn" style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }};">
+                                ♥
+                            </a>
                         </div>
                         <p class="texte-offre">{{ offre.description }}</p>
                         <div class="actions-offre">

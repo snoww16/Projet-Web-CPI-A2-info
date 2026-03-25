@@ -7,40 +7,58 @@
     
     <link rel="icon" type="image/png" href="https://static.stage.local/img/CESI_ton_stage.png">
 
-    <link rel="stylesheet" href="https://static.stage.local/css/style.css">
+    <link rel="stylesheet" href="https://static.stage.local/css/style.css?v=3">
 </head>
 <body>
     <header class="navbar">
-        <div class="container nav-content">
+        <div class="container-fluid nav-content">
             
             <a href="/" class="logo-container">
-                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo">
+                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo" style="height: 38px; width: auto;">
             </a>
 
             <button id="burger-btn" aria-label="Menu">☰</button>
 
             <nav aria-label="Navigation principale" id="nav-menu">
                 <ul class="nav-links">
+                    <li><a href="/">Accueil</a></li>
                     <li><a href="/offres">Recherche de stage</a></li>
                     <li><a href="/entreprises">Recherche d’entreprise</a></li>
+                    <li><a href="/a-propos">À propos</a></li>
                 </ul>
             </nav>
 
-            <details class="menu-compte">
-                <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
-                    <img src="https://ui-avatars.com/api/?name=User&background=1483d8&color=fff" alt="Avatar" class="avatar-compte">
-                </summary>
-                <div class="liste-compte" role="menu">
-                    {# On utilise Twig pour vérifier si l'utilisateur est connecté #}
-                    {% if is_logged_in %}
-                        <a href="/profil" role="menuitem">Mon profil / Réglages</a>
-                        <hr class="sep">
-                        <a href="/logout" role="menuitem" style="color: #ff6b6b;">Se déconnecter</a>
-                    {% else %}
-                        <a href="/login" role="menuitem">Se connecter</a>
-                    {% endif %}
-                </div>
-            </details>
+            <div style="display: flex; align-items: center; gap: 20px;">
+
+                <details class="menu-compte">
+                    <summary class="bouton-compte" style="list-style: none;">
+                        <div class="avatar-compte" style="background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border-radius: 50%; width: 38px; height: 38px;">
+                            {% if session is defined and session.id_user %}
+                                {{ session.prenom|first|upper }}{{ session.nom|first|upper }}
+                            {% else %}
+                                US
+                            {% endif %}
+                        </div>
+                    </summary>
+                    
+                    <div class="liste-compte">
+                        {% if session is defined and session.id_user %}
+                            <div style="padding: 10px 12px; color: #38bdf8; font-size: 0.9rem; text-align: center;">
+                                Bonjour<br>
+                                <strong style="color: white;">{{ session.prenom }} {{ session.nom }}</strong>
+                            </div>
+                            <hr class="sep">
+                            <a href="/profil">Mon Profil</a>
+                            <a href="/candidatures">Mes Candidatures</a>
+                            <hr class="sep">
+                            <a href="/logout" style="color: #ff6b6b; font-weight: bold;">Se déconnecter</a>
+                        {% else %}
+                            <a href="/login">Se connecter</a>
+                            <a href="/register">S'inscrire</a>
+                        {% endif %}
+                    </div>
+                </details>
+            </div>
         </div>
     </header>
 

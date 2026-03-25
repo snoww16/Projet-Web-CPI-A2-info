@@ -1,9 +1,13 @@
 <?php
 namespace App\Models;
 
-/**
- * The Model class is an abstract class that serves as the base class for all models in the application.
- */
+use PDO;
+
 abstract class Model {
-    protected $connection = null;
+    protected PDO $db;
+
+    public function __construct() {
+        // C'est ICI qu'on appelle notre super fichier de connexion !
+        $this->db = Database::getConnection();
+    }
 }

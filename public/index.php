@@ -2,71 +2,144 @@
 session_start();
 ini_set('display_errors', 1); error_reporting(E_ALL);
 
+// 1. On charge Twig
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// 2. On charge manuellement tes fichiers de base de données (pour éviter les erreurs d'autoloading)
+require_once __DIR__ . '/../src/Models/Database.php';
+require_once __DIR__ . '/../src/Models/Model.php';
+require_once __DIR__ . '/../src/Models/OfferModel.php';
+require_once __DIR__ . '/../src/Models/AuthModel.php';
+
+// On utilise le modèle
+use App\Models\OfferModel;
+
+// 3. Configuration de Twig
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../src/Views');
 $twig = new \Twig\Environment($loader, []);
 
-// On nettoie l'URL (ex: "/login?error=1" devient "/login")
+// 4. On récupère l'URL
 $request = $_SERVER['REQUEST_URI'];
 $parsed_url = parse_url($request);
 $path = $parsed_url['path'];
 
-// Fausse variable pour simuler la connexion (à remplacer par $_SESSION plus tard)
-// Mets 'true' pour voir le menu connecté, 'false' pour le menu déconnecté
-$is_logged_in = false; 
-
-// On prépare les données globales envoyées à TOUTES les vues Twig
-$twig->addGlobal('is_logged_in', $is_logged_in);
+$twig->addGlobal('session', $_SESSION);
 
 // ---------------------------------------------------------
-// LE ROUTEUR PRINCIPAL
+// LE ROUTEUR
 // ---------------------------------------------------------
-// ... début du fichier index.php ...
-
 switch ($path) {
     
-    // 1. NOUVELLE ROUTE : La Home Page !
     case '/':
         echo $twig->render('index.twig');
         break;
 
-    // 2. La page de recherche (Celle qui marche déjà)
     case '/offres':
+        $offerModel = new OfferModel();
+        $filters = $_GET; 
+        $vraies_offres = $offerModel->searchOffers($filters);
+        
+        $mes_favoris = $offerModel->getWishlistIdsByUser($_SESSION['id_user']);
+        
         echo $twig->render('offers/recherche.twig', [
-            'offres' => [
-                ['id' => 1, 'titre' => 'Stage Développeur Web', 'ville' => 'Toulouse', 'description' => 'Missions : intégration, API.'],
-                ['id' => 2, 'titre' => 'Stage Data / BI', 'ville' => 'Lyon', 'description' => 'Missions : reporting.'],
-            ]
+            'offres' => $vraies_offres,
+            'queryParams' => $filters,
+            'wishlist' => $mes_favoris // On l'envoie à Twig
         ]);
         break;
-
-    // 3. La page de connexion
-    case '/login':
-        echo $twig->render('auth/login.twig');
+    case '/wishlist/toggle':
+        if (isset($_GET['id'])) {
+            $offerModel = new OfferModel();
+            // On utilise notre faux utilisateur connecté pour liker l'offre
+            $offerModel->toggleWishlist($_SESSION['id_user'], $_GET['id']);
+        }
+        // Redirection invisible vers la page précédente
+        header('Location: ' . $_SERVER['HTTP_REFERER']); 
         break;
 
-    // 4. L'espace Administration (Ton ancien "page création entité")
+    case '/login':
+        // Si l'utilisateur a cliqué sur le bouton "Se connecter"
+        if (isset($_SESSION['id_user'])) {
+            header('Location: /offres');
+            exit;
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // On vérifie que les champs ont bien été envoyés pour éviter le crash
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+
+            $authModel = new \App\Models\AuthModel();
+            $user = $authModel->login($email, $password);
+            
+            if ($user) {
+                // CONNEXION RÉUSSIE
+                $_SESSION['id_user'] = $user['id_user'];
+                $_SESSION['nom'] = $user['nom'];
+                $_SESSION['prenom'] = $user['prenom'];
+                $_SESSION['role'] = $user['id_role'];
+                
+                $redirectUrl = $_SESSION['redirect_to'] ?? '/offres';
+                // On efface la mémoire pour la prochaine fois
+                unset($_SESSION['redirect_to']);
+                header('Location: ' . $redirectUrl);
+                exit;
+            } else {
+                // ÉCHEC : On renvoie la page de login AVEC le message d'erreur
+                echo $twig->render('auth/login.twig', ['error' => 'Adresse e-mail ou mot de passe incorrect.']);
+            }
+        } else {
+            // S'il arrive juste sur la page sans avoir cliqué
+            echo $twig->render('auth/login.twig');
+        }
+        break;
+    // --- GESTION DU LOGOUT ---
+    case '/logout':
+        session_destroy();
+        header('Location: /'); // NOUVEAU : Renvoie vers la Home Page !
+        exit;
+        break;
+
     case '/admin':
-        // Sécurité factice : redirige si pas connecté
-        // if(!$is_logged_in) { header('Location: /login'); exit; }
         echo $twig->render('admin/dashboard.twig');
         break;
 
-    // 5. La page de détails d'une offre pour postuler (ex: /offre/1)
     default:
-        // Si l'URL commence par /offre/ (ex: /offre/1)
+        // 1. PAGE DETAILS (Lecture seule)
         if (preg_match('/^\/offre\/([0-9]+)$/', $path, $matches)) {
             $offre_id = $matches[1];
-            // On simule qu'on a trouvé l'offre dans la BDD
-            echo $twig->render('offers/postuler.twig', [
-                'offre' => ['id' => $offre_id, 'titre' => 'Stage de folie !', 'entreprise_nom' => 'Tech Corp', 'description_detaillee' => 'Un stage incroyable où tu vas coder en PHP MVC.']
-            ]);
+            $offerModel = new \App\Models\OfferModel();
+            $vraie_offre = $offerModel->getOfferById($offre_id);
+            
+            if ($vraie_offre) {
+                echo $twig->render('offers/details.twig', ['offre' => $vraie_offre]);
+            } else {
+                http_response_code(404);
+                echo "<h1>Erreur 404 - Offre introuvable.</h1>";
+            }
             break;
         }
 
-        // Si aucune route ne correspond
-        http_response_code(404);
-        echo "<h1>Erreur 404 - Page introuvable</h1>";
-        break;
+        // 2. PAGE POSTULER (Le formulaire de candidature)
+        if (preg_match('/^\/postuler\/([0-9]+)$/', $path, $matches)) {
+            $offre_id = $matches[1];
+            
+            // Sécurité : Si l'étudiant n'est pas connecté, on le renvoie vers le login !
+            if (!isset($_SESSION['id_user'])) {
+                // NOUVEAU : On sauvegarde l'URL exacte où il voulait aller
+                $_SESSION['redirect_to'] = $_SERVER['REQUEST_URI'];
+                header('Location: /login');
+                exit;
+            }
+
+            $offerModel = new \App\Models\OfferModel();
+            $vraie_offre = $offerModel->getOfferById($offre_id);
+            
+            if ($vraie_offre) {
+                echo $twig->render('offers/postuler.twig', ['offre' => $vraie_offre]);
+            } else {
+                http_response_code(404);
+                echo "<h1>Erreur 404 - Offre introuvable.</h1>";
+            }
+            break;
+        }
 }

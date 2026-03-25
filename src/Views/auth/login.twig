@@ -1,35 +1,35 @@
 {% extends 'layout.twig' %}
 
-{% block title %}Connexion - CESI Ton Stage{% endblock %}
+{% block title %}Connexion{% endblock %}
 
 {% block content %}
-<section class="entete-page" style="text-align: center; margin-top: 40px;">
-    <div class="container">
-        <h2>Connexion</h2>
-        <p>Veuillez vous identifier pour accéder à votre espace.</p>
-    </div>
-</section>
+<div class="entete-page">
+    <h2>Connexion</h2>
+    <p class="hint">Veuillez vous identifier pour accéder à votre espace.</p>
+</div>
 
-<section class="zone-principale">
-    <div class="container" style="max-width: 500px; margin: 0 auto;">
-        <div class="card">
-            <form action="/login-submit" method="post" class="formulaire">
-                <div class="ligne-champ">
-                    <label for="email">Adresse e-mail</label>
-                    <input id="email" name="email" type="email" placeholder="ex : prenom.nom@viacesi.fr" required />
-                </div>
-
-                <div class="ligne-champ">
-                    <label for="mot_de_passe">Mot de passe</label>
-                    <input id="mot_de_passe" name="mot_de_passe" type="password" placeholder="Votre mot de passe" required />
-                </div>
-
-                <div class="actions-formulaire" style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn-simple primary" type="submit">Se connecter</button>
-                    <a class="link" href="#" style="font-size: 0.9rem;">Mot de passe oublié ?</a>
-                </div>
-            </form>
+<div class="container" style="max-width: 450px; margin-top: 20px;">
+    <div class="cardCVLM">
+        
+        {% if error %}
+        <div style="background-color: rgba(255, 77, 79, 0.1); color: #ff4d4f; border: 1px solid #ff4d4f; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            ⚠️ {{ error }}
         </div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="ligne-champ">
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="ligne-champ">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn-appliquer" style="width: 100%; margin-top: 10px;">Se connecter</button>
+        </form>
     </div>
-</section>
+</div>
 {% endblock %}
