@@ -65,10 +65,92 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <p>Mentions légales, cookies, différents liens du site (STx 28)</p>
+    <script src="https://static.stage.local/js/script.js"></script>
+
+    <footer style="background: #0b1121; padding: 60px 20px 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
+            
+            <div>
+                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">CESI<span style="color: #38bdf8;">Ton Stage</span></h3>
+                <p style="color: #94a3b8; line-height: 1.6;">La plateforme de mise en relation entre étudiants et entreprises pour trouver le stage idéal.</p>
+            </div>
+
+            <div>
+                <h4 style="color: #fff; margin-bottom: 20px;">Navigation</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                    <li><a href="/" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Accueil</a></li>
+                    <li><a href="/offres" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Recherche de stage</a></li>
+                    <li><a href="/entreprises" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Recherche d'entreprise</a></li>
+                    <li><a href="/a-propos" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">À propos de nous</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="color: #fff; margin-bottom: 20px;">Informations Légales</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                    <li><a href="/mentions-legales" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Mentions légales</a></li>
+                    <li><a href="/politique-confidentialite" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Politique de confidentialité</a></li>
+                    <li><a href="/contact" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">Nous contacter</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); color: #64748b; font-size: 0.9rem;">
+            &copy; {{ "now"|date("Y") }} Projet CESI Ton Stage. Tous droits réservés.
+        </div>
     </footer>
 
-    <script src="https://static.stage.local/js/script.js"></script>
+    <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; padding: 25px 20px; z-index: 9999; box-shadow: 0 -10px 25px rgba(0,0,0,0.5); border-top: 2px solid #38bdf8; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; text-align: center;">
+        <p style="color: #cbd5e1; margin: 0; max-width: 800px; line-height: 1.5; font-size: 0.95rem;">
+            <strong>Vos données, votre choix.</strong> Nous utilisons des cookies pour assurer le bon fonctionnement du site, analyser notre trafic et améliorer votre expérience (connexion, favoris). En cliquant sur "Accepter", vous consentez à l'utilisation de ces cookies.
+        </p>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+            <button onclick="acceptCookies()" style="background: #38bdf8; color: #0f172a; font-weight: bold; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; transition: 0.2s;">Tout accepter</button>
+            <button onclick="refuseCookies()" style="background: transparent; border: 1px solid #64748b; color: #cbd5e1; padding: 10px 25px; border-radius: 20px; cursor: pointer; transition: 0.2s;">Refuser</button>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour créer un cookie côté navigateur
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+
+        // Fonction pour lire un cookie
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for(let i=0;i < ca.length;i++) {
+                let c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+
+        // Au chargement de la page, si aucun choix n'a été fait, on affiche la bannière
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!getCookie("cookieConsent")) {
+                document.getElementById("cookie-banner").style.display = "flex";
+            }
+        });
+
+        // Actions des boutons
+        function acceptCookies() {
+            setCookie("cookieConsent", "accepted", 365); // Mémorisé pour 1 an
+            document.getElementById("cookie-banner").style.display = "none";
+        }
+
+        function refuseCookies() {
+            setCookie("cookieConsent", "refused", 365); // Mémorisé pour 1 an
+            document.getElementById("cookie-banner").style.display = "none";
+        }
+    </script>
 </body>
 </html>
