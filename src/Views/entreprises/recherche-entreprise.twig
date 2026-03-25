@@ -1,0 +1,103 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Recherche d'entreprise - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<section class="entete-page">
+    <div class="container">
+        <h2>Recherche d'Entreprise</h2>
+        <p>Découvrez les entreprises qui recrutent et consultez leurs fiches.</p>
+    </div>
+</section>
+
+<section class="zone-principale">
+    <div class="container">
+        <div class="bloc-contenu bloc-sans-survol">
+            
+            <div class="mise-en-page-recherche">
+                
+                <aside class="zone-filtres" id="zone-filtres">
+                    <h3>Filtres</h3>
+                    <form action="/entreprises" method="get" class="formulaire">
+                        <div class="ligne-champ">
+                            <label for="motscles">Mots-clés</label>
+                            <input id="motscles" name="q" type="search" placeholder="Nom de l'entreprise..." value="{{ queryParams.q }}"/>
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="secteur">Secteur</label>
+                            <input id="secteur" name="secteur" type="text" placeholder="ex: Informatique" value="{{ queryParams.secteur }}"/>
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="ville">Ville</label>
+                            <input id="ville" name="ville" type="text" placeholder="ex: Paris, Lyon..." value="{{ queryParams.ville }}"/>
+                        </div>
+                        
+                        <div class="actions-formulaire" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                            <button class="btn-appliquer" type="submit" style="width: 100%; cursor: pointer;">Rechercher</button>
+                            <a href="/entreprises" class="btn-reset" style="display: block; text-align: center; width: 100%; box-sizing: border-box;">Réinitialiser</a>
+                        </div>
+                    </form>
+                </aside>
+
+                <section class="zone-resultats">
+                    <h3 style="margin-bottom: 20px;">Entreprises partenaires</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        {% for entreprise in entreprises %}
+                        <article class="card" style="padding: 25px; display: flex; flex-direction: column; gap: 15px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid #38bdf8; transition: 0.3s;">
+                            
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);">
+                                    {% if entreprise.logo_path %}
+                                        <img src="{{ entreprise.logo_path }}" alt="Logo {{ entreprise.nom }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ entreprise.nom|url_encode }}&background=38bdf8&color=0F172A&size=128&bold=true" alt="Placeholder Logo" style="width: 100%; height: 100%;">
+                                    {% endif %}
+                                </div>
+                                
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; font-size: 1.2rem; color: #fff;">{{ entreprise.nom }}</h4>
+                                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                        {% if entreprise.ville %}<span class="badge" style="font-size: 0.75rem; padding: 2px 8px; background: rgba(255,255,255,0.05);">📍 {{ entreprise.ville }}</span>{% endif %}
+                                        {% if entreprise.secteur %}<span class="badge" style="font-size: 0.75rem; padding: 2px 8px; background: rgba(255,255,255,0.05);">🏢 {{ entreprise.secteur }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p style="margin: 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex-grow: 1;">
+                                {{ entreprise.description|length > 120 ? entreprise.description|slice(0, 120) ~ '...' : entreprise.description|default('Aucune description fournie.') }}
+                            </p>
+
+                            <div style="margin-top: 10px;">
+                                <a href="/entreprise/{{ entreprise.id_entreprise ?? entreprise.id }}" class="btn-simple" style="width: 100%; text-align: center; box-sizing: border-box; display: block;">Voir la fiche</a>
+                            </div>
+                        </article>
+                        {% else %}
+                            <p style="grid-column: 1 / -1; color: #94a3b8; font-style: italic;">Aucune entreprise ne correspond à votre recherche.</p>
+                        {% endfor %}
+                    </div>
+
+                    {% if totalPages is defined and totalPages > 0 %}
+                    <div style="margin-top: 40px; text-align: center;">
+                        <p class="hint">Page {{ currentPage }} sur {{ totalPages }}</p>
+                    </div>
+                    
+                    <div class="pagination">
+                        <a href="?page=1{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
+                        <a href="?page={{ currentPage - 1 }}{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
+
+                        {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
+                            <a href="?page={{ i }}{{ queryString }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
+                        {% endfor %}
+
+                        <a href="?page={{ currentPage + 1 }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
+                        <a href="?page={{ totalPages }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
+                    </div>
+                    {% endif %}
+
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

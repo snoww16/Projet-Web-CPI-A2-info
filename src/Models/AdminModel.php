@@ -7,22 +7,34 @@ class AdminModel extends Model {
     
     // --- 1. LECTURE DES DONNÉES (Pour les listes) ---
 
-    public function getUtilisateursByRole($id_role) {
-        // On concatène Nom et Prénom pour l'affichage dans la liste
-        $sql = "SELECT id_user AS id, CONCAT(nom, ' ', prenom) AS nom FROM Utilisateur WHERE id_role = :role ORDER BY nom ASC";
+    // --- 1. LECTURE DES DONNÉES (Avec Pagination) ---
+
+    public function getUtilisateursByRole($id_role, $limit = 15, $offset = 0) {
+        $sql = "SELECT id_user AS id, CONCAT(nom, ' ', prenom) AS nom FROM Utilisateur WHERE id_role = :role ORDER BY nom ASC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['role' => $id_role]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getEntreprises() {
-        $sql = "SELECT id_entreprise AS id, nom FROM Entreprise ORDER BY nom ASC";
-        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    public function countUtilisateursByRole($id_role) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM Utilisateur WHERE id_role = :role");
+        $stmt->execute(['role' => $id_role]);
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
-    public function getOffres() {
-        $sql = "SELECT id_offre AS id, titre AS nom FROM Offre ORDER BY date_offre DESC";
+    public function getEntreprises($limit = 15, $offset = 0) {
+        $sql = "SELECT id_entreprise AS id, nom FROM Entreprise ORDER BY nom ASC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function countEntreprises() {
+        return $this->db->query("SELECT COUNT(*) as total FROM Entreprise")->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
+    public function getOffres($limit = 15, $offset = 0) {
+        $sql = "SELECT id_offre AS id, titre AS nom FROM Offre ORDER BY date_offre DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function countOffres() {
+        return $this->db->query("SELECT COUNT(*) as total FROM Offre")->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     // --- 2. CRÉATION DES DONNÉES (Pour les formulaires) ---
@@ -52,14 +64,20 @@ class AdminModel extends Model {
 
     // Pour l'offre, je mets id_entreprise = 1 par défaut pour tes tests. 
     // Plus tard, on ajoutera un menu déroulant pour choisir l'entreprise !
-    public function creerOffre($titre, $description, $remuneration, $date_debut) {
-        $sql = "INSERT INTO Offre (titre, description, remuneration, date_debut, id_entreprise) VALUES (:titre, :desc, :remun, :date_debut, 1)";
+    public function creerOffre($titre, $description, $remuneration, $date_debut, $id_entreprise, $ville, $duree, $type_contrat, $domaine) {
+        $sql = "INSERT INTO Offre (titre, description, remuneration, date_debut, id_entreprise, ville, duree, type_contrat, domaine, date_offre) 
+                VALUES (:titre, :desc, :remun, :date_debut, :id_entreprise, :ville, :duree, :type_contrat, :domaine, CURDATE())";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'titre' => $titre, 
             'desc' => $description, 
             'remun' => $remuneration, 
-            'date_debut' => $date_debut
+            'date_debut' => $date_debut,
+            'id_entreprise' => $id_entreprise,
+            'ville' => $ville,
+            'duree' => $duree,
+            'type_contrat' => $type_contrat,
+            'domaine' => $domaine
         ]);
     }
 
@@ -78,5 +96,25 @@ class AdminModel extends Model {
     public function supprimerOffre($id) {
         $sql = "DELETE FROM Offre WHERE id_offre = :id";
         $this->db->prepare($sql)->execute(['id' => $id]);
+    }
+
+    public function modifierOffre($id, $titre, $description, $remuneration, $date_debut, $id_entreprise, $ville, $duree, $type_contrat, $domaine) {
+        $sql = "UPDATE Offre 
+                SET titre = :titre, description = :desc, remuneration = :remun, date_debut = :date_debut, 
+                    id_entreprise = :id_entreprise, ville = :ville, duree = :duree, type_contrat = :type_contrat, domaine = :domaine 
+                WHERE id_offre = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'titre' => $titre, 
+            'desc' => $description, 
+            'remun' => $remuneration, 
+            'date_debut' => $date_debut,
+            'id_entreprise' => $id_entreprise,
+            'ville' => $ville,
+            'duree' => $duree,
+            'type_contrat' => $type_contrat,
+            'domaine' => $domaine,
+            'id' => $id
+        ]);
     }
 }

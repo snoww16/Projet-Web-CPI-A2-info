@@ -21,27 +21,36 @@
         </div>
 
         <div class="actions-entite" style="display: flex; align-items: center; gap: 10px;">
+            <a href="{% if type == 'offres' %}/offre/{{ item.id }}{% else %}/profil/{{ type }}/{{ item.id }}{% endif %}" class="btn-simple" style="padding: 8px 15px; border-color: #38bdf8; color: #38bdf8; display: flex; align-items: center; height: 42px; box-sizing: border-box;">👁️ Afficher</a>
             
-            <a href="/profil/{{ type }}/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; border-color: #38bdf8; color: #38bdf8; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
-                👁️ Afficher
-            </a>
+            <a href="/admin/{{ type }}/modifier/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; display: flex; align-items: center; height: 42px; box-sizing: border-box;">✏️ Modifier</a>
             
-            <a href="/admin/{{ type }}/modifier/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
-                ✏️ Modifier
-            </a>
-            
-            <form action="/admin/{{ type }}/supprimer/{{ item.id }}" method="POST" style="margin: 0; display: flex; align-items: center; height: 42px;" onsubmit="return confirm('⚠️ ATTENTION : Êtes-vous sûr de vouloir supprimer définitivement cet élément ? Cette action est irréversible.');">
-                <button type="submit" class="btn-simple" style="padding: 8px 15px; border-color: #ff6b6b; color: #ff6b6b; background: transparent; cursor: pointer; display: flex; align-items: center; height: 42px; box-sizing: border-box;">
-                    🗑️ Supprimer
-                </button>
+            <form action="/admin/{{ type }}/supprimer/{{ item.id }}" method="POST" style="margin: 0; display: flex; align-items: center; height: 42px;" onsubmit="return confirm('⚠️ ATTENTION : Êtes-vous sûr de vouloir supprimer définitivement cet élément ?');">
+                <button type="submit" class="btn-simple" style="padding: 8px 15px; border-color: #ff6b6b; color: #ff6b6b; background: transparent; cursor: pointer; display: flex; align-items: center; height: 42px; box-sizing: border-box;">🗑️ Supprimer</button>
             </form>
-
         </div>
-
     </div>
     {% else %}
         <p style="text-align: center;">Aucune donnée trouvée.</p>
     {% endfor %}
+
+    {% if totalPages is defined and totalPages > 0 %}
+    <div style="margin-top: 30px; text-align: center;">
+        <p class="hint">Page {{ currentPage }} sur {{ totalPages }}</p>
+    </div>
+    
+    <div class="pagination">
+        <a href="?page=1" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
+        <a href="?page={{ currentPage - 1 }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
+
+        {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
+            <a href="?page={{ i }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
+        {% endfor %}
+
+        <a href="?page={{ currentPage + 1 }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
+        <a href="?page={{ totalPages }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}

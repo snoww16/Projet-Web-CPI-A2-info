@@ -1,85 +1,130 @@
 {% extends 'layout.twig' %}
-{% block title %}Créer : {{ type }}{% endblock %}
+{% block title %}{{ is_edit ? 'Modifier' : 'Créer' }} : {{ type }}{% endblock %}
 
 {% block content %}
 <div class="entete-page">
-    <h2 style="text-transform: capitalize;">Nouveau/Nouvelle {{ type|trim('s') }}</h2>
-    <p class="hint">Remplissez les informations ci-dessous pour créer cette entité.</p>
+    <h2 style="text-transform: capitalize;">{{ is_edit ? 'Modifier' : 'Nouveau/Nouvelle' }} {{ type|trim('s') }}</h2>
+    <p class="hint">{{ is_edit ? 'Modifiez les informations ci-dessous.' : 'Remplissez les informations ci-dessous pour créer cette entité.' }}</p>
 </div>
 
 <div class="container" style="max-width: 600px;">
     <div class="cardCVLM" style="padding: 30px;">
         
-        <form action="/admin/{{ type }}/creer" method="POST">
+        <form method="POST">
             
             {% if type == 'etudiants' or type == 'pilotes' %}
                 <div class="ligne-champ">
                     <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" required>
+                    <input type="text" id="nom" name="nom" value="{{ donnees.nom ?? '' }}" required>
                 </div>
                 <div class="ligne-champ">
                     <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" required>
+                    <input type="text" id="prenom" name="prenom" value="{{ donnees.prenom ?? '' }}" required>
                 </div>
                 <div class="ligne-champ">
                     <label for="email">Adresse E-mail</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="{{ donnees.email ?? '' }}" required>
                 </div>
+                {% if not is_edit %}
                 <div class="ligne-champ">
                     <label for="password">Mot de passe temporaire</label>
                     <input type="password" id="password" name="password" required>
                 </div>
+                {% endif %}
             {% endif %}
 
             {% if type == 'entreprises' %}
                 <div class="ligne-champ">
                     <label for="nom">Nom de l'entreprise</label>
-                    <input type="text" id="nom" name="nom" required>
+                    <input type="text" id="nom" name="nom" value="{{ donnees.nom ?? '' }}" required>
                 </div>
                 <div class="ligne-champ">
                     <label for="description">Description courte</label>
-                    <textarea id="description" name="description" rows="3" required></textarea>
+                    <textarea id="description" name="description" rows="3" required>{{ donnees.description ?? '' }}</textarea>
                 </div>
                 <div class="ligne-champ">
                     <label for="email">E-mail de contact</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="{{ donnees.email_contact ?? '' }}" required>
                 </div>
                 <div class="ligne-champ">
                     <label for="telephone">Téléphone de contact</label>
-                    <input type="tel" id="telephone" name="telephone">
+                    <input type="tel" id="telephone" name="telephone" value="{{ donnees.telephone ?? '' }}">
                 </div>
             {% endif %}
 
             {% if type == 'offres' %}
                 <div class="ligne-champ">
                     <label for="titre">Titre de l'offre</label>
-                    <input type="text" id="titre" name="titre" required>
+                    <input type="text" id="titre" name="titre" value="{{ donnees.titre ?? '' }}" required>
+                </div>
+
+                <div class="ligne-champ">
+                    <label for="entreprise">Entreprise liée à l'offre</label>
+                    <select id="entreprise" name="entreprise" required>
+                        <option value="">Sélectionnez une entreprise...</option>
+                        {% for ent in entreprises %}
+                            <option value="{{ ent.id }}" {{ donnees.id_entreprise is defined and donnees.id_entreprise == ent.id ? 'selected' : '' }}>
+                                {{ ent.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ligne-champ" style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label for="ville">Ville (Localisation)</label>
+                        <input type="text" id="ville" name="ville" placeholder="ex: Paris, Lyon..." value="{{ donnees.ville ?? '' }}" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="domaine">Domaine d'activité</label>
+                        <select id="domaine" name="domaine" required>
+                            <option value="">Sélectionnez un domaine...</option>
+                            {% for dom in domaines %}
+                                <option value="{{ dom }}" {{ donnees.domaine is defined and donnees.domaine == dom ? 'selected' : '' }}>
+                                    {{ dom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="ligne-champ" style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label for="duree">Durée du stage</label>
+                        <input type="text" id="duree" name="duree" placeholder="ex: 6 mois" value="{{ donnees.duree ?? '' }}" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="type_contrat">Type de contrat</label>
+                        <select id="type_contrat" name="type_contrat" required>
+                            <option value="Stage" {{ donnees.type_contrat is defined and donnees.type_contrat == 'Stage' ? 'selected' : '' }}>Stage</option>
+                            <option value="Alternance" {{ donnees.type_contrat is defined and donnees.type_contrat == 'Alternance' ? 'selected' : '' }}>Alternance</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="ligne-champ">
                     <label for="description">Description des missions</label>
-                    <textarea id="description" name="description" rows="4" required></textarea>
+                    <textarea id="description" name="description" rows="4" required>{{ donnees.description ?? donnees.offre_desc ?? '' }}</textarea>
                 </div>
                 <div class="ligne-champ">
                     <label for="competences">Compétences (séparées par des virgules)</label>
-                    <input type="text" id="competences" name="competences" placeholder="ex: PHP, SQL, JavaScript" required>
+                    <input type="text" id="competences" name="competences" placeholder="ex: PHP, SQL" value="{{ donnees.competences ?? '' }}">
                 </div>
                 <div class="ligne-champ" style="display: flex; gap: 15px;">
                     <div style="flex: 1;">
                         <label for="remuneration">Rémunération (€/mois)</label>
-                        <input type="number" id="remuneration" name="remuneration" step="10">
+                        <input type="number" id="remuneration" name="remuneration" step="10" value="{{ donnees.remuneration ?? '' }}">
                     </div>
                     <div style="flex: 1;">
                         <label for="date_debut">Date de début prévue</label>
-                        <input type="date" id="date_debut" name="date_debut" required>
+                        <input type="date" id="date_debut" name="date_debut" value="{{ donnees.date_debut ?? '' }}" required>
                     </div>
                 </div>
-                {% endif %}
+            {% endif %}
 
             <div style="display: flex; gap: 15px; margin-top: 30px;">
                 <a href="/admin/{{ type }}" class="btn-reset" style="flex: 1; text-align: center; padding: 12px;">Annuler</a>
-                <button type="submit" class="btn-appliquer" style="flex: 2; padding: 12px; font-size: 1.1rem;">Créer l'entité</button>
+                <button type="submit" class="btn-appliquer" style="flex: 2; padding: 12px; font-size: 1.1rem;">
+                    {{ is_edit ? 'Enregistrer les modifications' : "Créer l'entité" }}
+                </button>
             </div>
-            
         </form>
     </div>
 </div>

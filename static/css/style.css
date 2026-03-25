@@ -292,3 +292,38 @@ select option {
     background-color: #0284c7; /* Bleu plus foncé au survol */
     transform: translateY(-1px);
 }
+
+.pagination { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 8px; 
+    margin-top: 40px; 
+}
+.pagination a { 
+    padding: 8px 14px; 
+    border-radius: 8px; 
+    background: rgba(255,255,255,0.05); 
+    color: #e9eef7; 
+    text-decoration: none; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    transition: 0.2s;
+    font-weight: bold;
+}
+.pagination a:hover:not(.disabled) { 
+    background: #38bdf8; 
+    color: #ffffff; 
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+}
+.pagination .active { 
+    background: #38bdf8; 
+    color: #ffffff; 
+    border-color: #38bdf8; 
+}
+/* Le style "grisé" quand on ne peut plus cliquer (ex: on est déjà sur la page 1) */
+.pagination .disabled { 
+    opacity: 0.3; 
+    cursor: not-allowed; 
+    pointer-events: none; 
+}
