@@ -1,0 +1,65 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Postuler à une offre - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<section class="entete-page alt-entete" style="text-align: left; padding: 60px 0;">
+    <div class="container">
+        <a href="/offres" class="btn-simple" style="margin-bottom: 20px;">← Retour</a>
+        <h1>{{ offre.entreprise_nom }}</h1>
+        <h2>Postuler à l'offre : {{ offre.titre }}</h2>
+    </div>
+</section>
+
+<section class="zone-principale">
+    <div class="container">
+        <div class="mise-en-page-postuler">
+
+            <aside class="bloc-infos-offre">
+                <div class="card">
+                    <h3>Informations de l'offre</h3>
+                    <p>{{ offre.description_detaillee }}</p>
+                    <p class="hint" style="margin-top: 20px;">N'oubliez pas d'ajouter un message personnalisé pour augmenter vos chances.</p>
+                </div>
+            </aside>
+
+            <section class="zone-formulaire-candidature">
+                {# On vérifie si l'utilisateur est connecté et étudiant #}
+                {% if is_logged_in %}
+                    <form action="/postuler-submit" method="post" enctype="multipart/form-data" class="formulaire">
+                        <input type="hidden" name="offre_id" value="{{ offre.id }}" />
+                        
+                        <div class="cardCVLM">
+                            <h3>Ajouter CV</h3>
+                            <input type="file" name="cv" accept=".pdf,.doc,.docx" required class="btn-file-custom">
+                            <p class="hint">Format PDF ou DOCX uniquement.</p>
+                        </div>
+
+                        <div class="cardCVLM">
+                            <h3>Ajouter lettre de motivation</h3>
+                            <input type="file" name="lm" accept=".pdf,.doc,.docx" required class="btn-file-custom">
+                            <p class="hint">Format PDF ou DOCX uniquement.</p>
+                        </div>
+
+                        <div class="card message-bloc">
+                            <h3>Ajouter message personnalisé</h3>
+                            <div class="ligne-champ">
+                                <textarea name="message" placeholder="Bonjour, je suis très intéressé par cette offre car..." rows="6"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="action-postuler">
+                            <button type="submit" class="btn-simple primary" style="width: 100%; font-size: 1.1rem; padding: 16px;">POSTULER</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="card" style="text-align: center; background: rgba(255, 100, 100, 0.1);">
+                        <h3>Vous devez être connecté en tant qu'étudiant pour postuler.</h3>
+                        <a href="/login" class="btn-simple primary" style="margin-top: 20px;">Se connecter</a>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

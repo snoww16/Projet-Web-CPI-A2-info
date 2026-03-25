@@ -1,0 +1,37 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Accueil - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<main class="container">
+    <section class="hero-grid">
+        <div class="card search-box">
+            <h2>Trouvez un stage aujourd'hui</h2>
+            <p>Utilisez notre moteur de recherche pour trouver l'offre de stage qui correspond à votre profil.</p>
+            <a href="/offres" class="btn-simple primary">Lancer la recherche</a>
+        </div>
+        
+        <div class="user-spaces">
+            <div class="card space-card">
+                <h3>Espace Étudiant</h3>
+                <a href="/profil" class="btn-simple">Voir mon profil</a>
+            </div>
+            <div class="card space-card">
+                <h3>Administration</h3>
+                <a href="/admin" class="btn-simple">Gérer les entités</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="card info-section">
+        <h3>Conseils / Infos sur le site</h3>
+        <p>Découvrez nos guides pour réussir vos entretiens et optimiser votre CV. Nous mettons régulièrement à jour nos conseils pour vous aider dans votre recherche de stage.</p>
+    </section>
+
+    <section class="card offers-section">
+        <h3>Dernières offres de stage</h3>
+        <div class="placeholder-content hint">La liste des dernières offres apparaîtra ici bientôt. Pour l'instant, rendez-vous sur la page de recherche.</div>
+    </section>
+</main>
+{% endblock %}
+

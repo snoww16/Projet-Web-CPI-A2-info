@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CESI Ton Stage{% endblock %}</title>
+    
+    <link rel="icon" type="image/png" href="https://static.stage.local/img/CESI_ton_stage.png">
+
+    <link rel="stylesheet" href="https://static.stage.local/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-content">
+            
+            <a href="/" class="logo-container">
+                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo">
+            </a>
+
+            <button id="burger-btn" aria-label="Menu">☰</button>
+
+            <nav aria-label="Navigation principale" id="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="/offres">Recherche de stage</a></li>
+                    <li><a href="/entreprises">Recherche d’entreprise</a></li>
+                </ul>
+            </nav>
+
+            <details class="menu-compte">
+                <summary class="bouton-compte" aria-label="Ouvrir le menu du compte">
+                    <img src="https://ui-avatars.com/api/?name=User&background=1483d8&color=fff" alt="Avatar" class="avatar-compte">
+                </summary>
+                <div class="liste-compte" role="menu">
+                    {# On utilise Twig pour vérifier si l'utilisateur est connecté #}
+                    {% if is_logged_in %}
+                        <a href="/profil" role="menuitem">Mon profil / Réglages</a>
+                        <hr class="sep">
+                        <a href="/logout" role="menuitem" style="color: #ff6b6b;">Se déconnecter</a>
+                    {% else %}
+                        <a href="/login" role="menuitem">Se connecter</a>
+                    {% endif %}
+                </div>
+            </details>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>Mentions légales, cookies, différents liens du site (STx 28)</p>
+    </footer>
+
+    <script src="https://static.stage.local/js/script.js"></script>
+</body>
+</html>

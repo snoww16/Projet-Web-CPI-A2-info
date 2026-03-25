@@ -1,62 +1,32 @@
 <?php
 namespace App\Models;
+use PDO;
+use PDOException;
 
 class OfferModel extends Model {
 
-    /**
-     * OfferModel constructor.
-     * 
-     * @param mixed $connection The database connection. If null, a new FileDatabase connection will be created.
-     */
-    public function __construct($connection = null) {
-        if(is_null($connection)) {
-            $this->connection = new FileDatabase('offer', ['offer', 'status']);
-        } else {
-            $this->connection = $connection;
+    public function __construct() {
+        // Connexion à la BDD (idéalement à mettre dans la classe parente Model)
+        try {
+            $this->connection = new PDO("mysql:host=localhost;dbname=web4all;charset=utf8mb4", "root", "", [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
+        } catch (PDOException $e) {
+            die("Erreur de connexion : " . $e->getMessage());
         }
     }
 
-    /**
-     * Get all offer from the model.
-     * 
-     * @return array An array of all offers.
-     */
     public function getAllOffers() {
-        return $this->connection->getAllRecords();
+        // Vraie requête SQL
+        $stmt = $this->connection->prepare("SELECT * FROM offres");
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
-    /**
-     * Get a specific offer by its ID.
-     * 
-     * @param int $id The ID of the offer.
-     * @return mixed The offer with the specified ID.
-     */
-    public function getOffer($id) {
-        return $this->connection->getRecord($id);
+    public function getOfferById($id) {
+        $stmt = $this->connection->prepare("SELECT * FROM offres WHERE id_offre = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
-    
-
-    /**
-     * Add a new offer to the model.
-     * 
-     * @param string $offer The offer to add.
-     * @return mixed The result of the insert operation.
-     */
-    public function addOffer($offer) {
-        // Create a new record with the offer and the status 'todo' (by default)
-    }
-
-    /**
-     * Helper method to update a offer with a new status.
-     * Update a offer with a new offer and status.
-     * 
-     * @param int $id The ID of the offer to update.
-     * @param string $offer The new offer.
-     * @param string $status The new status.
-     * @return mixed The result of the update operation.
-     */
-    private function updateoffer($id, $offer, $status) {
-
-    }
-
 }

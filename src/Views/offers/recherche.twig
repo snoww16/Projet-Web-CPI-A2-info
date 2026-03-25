@@ -1,0 +1,73 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Recherche de stage - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<section class="entete-page">
+    <div class="container">
+        <h2>Recherche de stage</h2>
+        <p>Utilisez les filtres afin trouver le stage idéal pour votre profil.</p>
+    </div>
+</section>
+
+<section class="zone-principale">
+    <div class="container">
+        <div class="bloc-contenu bloc-sans-survol">
+            
+            <div class="mobile-filter-bar">
+                <button id="btn-toggle-filtres" class="btn-simple">⚙️ Afficher les filtres</button>
+            </div>
+
+            <div class="mise-en-page-recherche">
+
+                <aside class="zone-filtres" id="zone-filtres" aria-label="Filtres de recherche">
+                    <button id="btn-close-filtres" class="btn-simple secondary">✖ Fermer les filtres</button>
+                    <h3>Filtres</h3>
+                    <form action="/offres" method="get" class="formulaire">
+                        <div class="ligne-champ">
+                            <label for="motscles">Mots-clés</label>
+                            <input id="motscles" name="q" type="search" placeholder="ex : dev web, data..." />
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="ville">Localisation</label>
+                            <input id="ville" name="ville" type="text" placeholder="ex : Toulouse" />
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="duree">Durée</label>
+                            <input id="duree" name="duree" type="text" placeholder="ex : 4-6 mois" />
+                        </div>
+                        <div class="ligne-champ">
+                            <label for="date-debut">Date de début</label>
+                            <input id="date-debut" name="date_debut" type="date" />
+                        </div>
+                        <div class="actions-formulaire">
+                            <button class="btn-simple" type="submit">Appliquer</button>
+                            <button class="btn-simple secondary" type="reset">Réinitialiser</button>
+                        </div>
+                    </form>
+                </aside>
+
+                <section class="zone-resultats" aria-label="Résultats">
+                    <h3>Offres</h3>
+                    {% for offre in offres %}
+                    <article class="offre">
+                        <div class="entete-offre">
+                            <div class="titre-et-ville">
+                                <h4>{{ offre.titre }}</h4>
+                                <span class="badge">{{ offre.ville }}</span>
+                            </div>
+                            <button class="wishlist-btn" aria-label="Ajouter à la wishlist">♥</button>
+                        </div>
+                        <p class="texte-offre">{{ offre.description }}</p>
+                        <div class="actions-offre">
+                            <a class="btn-simple" href="/offre/{{ offre.id }}">Voir l'offre</a>
+                            <a class="btn-simple primary" href="/offre/{{ offre.id }}#postuler">POSTULER</a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
