@@ -100,6 +100,94 @@ a { color: inherit; text-decoration: none; }
 .entete-page { text-align: center; padding: 60px 0; margin-bottom: 10px; }
 .entete-page h2 { font-size: 2.2rem; margin-bottom: 10px; }
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: minmax(240px, 300px) 1fr;
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.right-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.right-panel .right-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.right-tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    gap: 6px;
+    padding-bottom: 4px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px 10px 0 0;
+}
+
+.tab-btn {
+    border: none;
+    flex: 1;
+    min-width: 0;
+    background: rgba(255,255,255,0.08);
+    color: #e9eef7;
+    padding: 10px 12px;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tab-btn.active {
+    background: rgba(255,255,255,0.18);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.profile-card h4 {
+    margin-bottom: 10px;
+    font-size: 1.05rem;
+}
+
+.profile-personal p,
+.profile-maininfo li {
+    margin-bottom: 8px;
+    color: rgba(233, 238, 247, 0.8);
+}
+
+.profile-maininfo ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.right-panel .card {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 920px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Alignement de TOUTES les sections du main (Home Page) */
 main.container {
     display: flex;
@@ -260,53 +348,61 @@ footer { text-align: center; padding: 30px 0; color: rgba(233, 238, 247, 0.5); f
         </section>
 
         <section class="profile-grid">
-            <aside class="card profile-card">
-                <img src="https://via.placeholder.com/150" alt="Photo de profil" />
-                <h3>prenom.nom</h3>
-                <p><strong>Email :</strong> prenom.nom@exemple.com</p>
-                <p><strong>Localisation :</strong> Paris, France</p>
-                <p><strong>Statut :</strong> Actif</p>
-                <div class="grid-colonnes" style="margin-top:12px;">
-                    <div class="bloc-liste">
-                        <h4>Informations principales</h4>
-                        <ul>
-                            <li>Expérience : 4 ans</li>
-                            <li>Compétences : HTML / CSS / JS</li>
-                            <li>Disponibilité : Immédiate</li>
-                        </ul>
-                    </div>
-                    <div class="bloc-liste">
-                        <h4>Actions</h4>
-                        <a class="btn-simple primary" href="#">Modifier le profil</a>
-                    </div>
+            <div class="left-panel">
+                <div class="card profile-card profile-personal">
+                    <img src="https://via.placeholder.com/150" alt="Photo de profil" />
+                    <h3>prenom.nom</h3>
+                    <a class="btn-simple primary" href="#" style="margin-top:12px; display:inline-block;">Modifier le profil</a>
                 </div>
-            </aside>
 
-            <div>
-                <div class="card" style="margin-bottom: 15px;">
-                    <div class="section-header">
-                        <h3>Wishlist</h3>
-                        <span class="badge">4</span>
-                    </div>
-                    <div class="bloc-liste" style="padding: 14px;">
-                        <ul>
-                            <li>Frontend dev - Startup A</li>
-                            <li>UX designer - Agence B</li>
-                            <li>Dev full-stack - Société C</li>
-                            <li>Chef de projet - Organisation D</li>
-                        </ul>
-                    </div>
+                <div class="card profile-card profile-maininfo">
+                    <h4>Informations principales</h4>
+                    <ul>
+                        <li>Email :</strong> prenom.nom@exemple.com</li>
+                        <li>Localisation :</strong> Paris, France</li>
+                        <li>Statut :</strong> Actif</li>
+                        <li>Expérience : 4 ans</li>
+                        <li>Compétences : HTML / CSS / JS</li>
+                        <li>Disponibilité : Immédiate</li>
+                        <li>Langues : Français & anglais</li>
+
+                    </ul>
                 </div>
-                <div class="card">
-                    <div class="section-header">
-                        <h3>Offres postées</h3>
-                        <span class="badge">2</span>
+            </div>
+
+            <div class="right-panel">
+                <div class="card right-card">
+                    <div class="right-tabs">
+                        <button class="tab-btn active" data-target="wishlist-tab">Wishlist</button>
+                        <button class="tab-btn" data-target="offres-tab">Offres postées</button>
                     </div>
-                    <div class="bloc-liste" style="padding: 14px;">
-                        <ul>
-                            <li>Développeur back-end - Société X</li>
-                            <li>Intégrateur web - Société Y</li>
-                        </ul>
+
+                    <div class="tab-content active" id="wishlist-tab">
+                        <div class="section-header">
+                            <h3>Wishlist</h3>
+                            <span class="badge">4</span>
+                        </div>
+                        <div class="bloc-liste" style="padding: 14px;">
+                            <ul>
+                                <li>Frontend dev - Startup A</li>
+                                <li>UX designer - Agence B</li>
+                                <li>Dev full-stack - Société C</li>
+                                <li>Chef de projet - Organisation D</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="offres-tab">
+                        <div class="section-header">
+                            <h3>Offres postées</h3>
+                            <span class="badge">2</span>
+                        </div>
+                        <div class="bloc-liste" style="padding: 14px;">
+                            <ul>
+                                <li>Développeur back-end - Société X</li>
+                                <li>Intégrateur web - Société Y</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -319,6 +415,21 @@ footer { text-align: center; padding: 30px 0; color: rgba(233, 238, 247, 0.5); f
         const burgerBtn = document.getElementById('burger-btn');
         const navMenu = document.getElementById('nav-menu');
         burgerBtn?.addEventListener('click', () => navMenu?.classList.toggle('active'));
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const targetId = btn.dataset.target;
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === targetId);
+                });
+            });
+        });
     </script>
 </body>
 </html>
