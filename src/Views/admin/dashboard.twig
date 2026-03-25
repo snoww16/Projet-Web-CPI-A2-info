@@ -1,47 +1,36 @@
 {% extends 'layout.twig' %}
-
-{% block title %}Espace Administration - CESI Ton Stage{% endblock %}
+{% block title %}Espace Administration{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-content">
-        <h2>Espace Administration</h2>
+<div class="entete-page">
+    <h2>Espace Administration</h2>
+    <p class="hint">Gérez les différentes entités du système selon vos droits.</p>
+</div>
+
+<div class="container">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px 0;">
         
-        {% if user.role == 'admin' or user.role == 'pilote' %}
-            <div class="cards">
-                
-                {% if user.role == 'admin' %}
-                <div class="card">
-                    <h3>Comptes Pilotes</h3>
-                    <p>Créer, modifier, supprimer un compte pilote.</p>
-                    <a href="/admin/pilotes" class="btn-simple" style="margin-top: 15px;">Gérer</a>
-                </div>
-                {% endif %}
-
-                <div class="card">
-                    <h3>Comptes Étudiants</h3>
-                    <p>Créer, modifier, supprimer un compte étudiant.</p>
-                    <a href="/admin/etudiants" class="btn-simple" style="margin-top: 15px;">Gérer</a>
-                </div>
-
-                <div class="card">
-                    <h3>Entreprises</h3>
-                    <p>Créer, modifier, supprimer une entreprise.</p>
-                    <a href="/admin/entreprises" class="btn-simple" style="margin-top: 15px;">Gérer</a>
-                </div>
-
-                <div class="card">
-                    <h3>Offres de stage</h3>
-                    <p>Créer, modifier, supprimer une offre de stage.</p>
-                    <a href="/admin/offres" class="btn-simple" style="margin-top: 15px;">Gérer</a>
-                </div>
-            </div>
-        {% else %}
-            <div class="card" style="margin: 0 auto; background: rgba(255,0,0,0.2);">
-                <h3>Accès Refusé</h3>
-                <p>Vous n'avez pas les permissions nécessaires pour voir cette page.</p>
-            </div>
+        {% if session.role == 1 %}
+        <a href="/admin/pilotes" class="card" style="text-align: center; text-decoration: none; display: block;">
+            <h3 style="color: #38bdf8;">Comptes Pilotes</h3>
+            <p>Créer, modifier, supprimer un pilote.</p>
+        </a>
         {% endif %}
+
+        <a href="/admin/etudiants" class="card" style="text-align: center; text-decoration: none; display: block;">
+            <h3 style="color: #38bdf8;">Comptes Étudiants</h3>
+            <p>Créer, modifier, supprimer un étudiant.</p>
+        </a>
+
+        <a href="/admin/entreprises" class="card" style="text-align: center; text-decoration: none; display: block;">
+            <h3 style="color: #38bdf8;">Entreprises</h3>
+            <p>Créer, modifier, supprimer une entreprise.</p>
+        </a>
+
+        <a href="/admin/offres" class="card" style="text-align: center; text-decoration: none; display: block;">
+            <h3 style="color: #38bdf8;">Offres de stage</h3>
+            <p>Créer, modifier, supprimer une offre.</p>
+        </a>
     </div>
-</section>
+</div>
 {% endblock %}

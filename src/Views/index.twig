@@ -16,10 +16,12 @@
                 <h3>Espace Étudiant</h3>
                 <a href="/profil" class="btn-simple">Voir mon profil</a>
             </div>
+            {% if session is defined and session.role in [2, 1] %}
             <div class="card space-card">
                 <h3>Administration</h3>
                 <a href="/admin" class="btn-simple">Gérer les entités</a>
             </div>
+            {% endif %}
         </div>
     </section>
 
