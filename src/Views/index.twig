@@ -47,53 +47,20 @@
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start;">
         <section>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                <h2 style="margin: 0; font-size: 1.5rem;">🔥 Dernières offres</h2>
-                <a href="/offres" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Voir tout ›</a>
-            </div>
+                    <h2 style="margin: 0; font-size: 1.5rem;">🔥 Dernières offres</h2>
+                    <a href="/offres" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Voir tout ›</a>
+                </div>
 
-            <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                    {% for offre in dernieres_offres %}
+                        <div class="liste-offres-accueil">
                 {% for offre in dernieres_offres %}
-                    <article class="offre" style="margin: 0; padding: 20px; display: flex; flex-direction: column; height: 100%;">
-                        <div class="entete-offre" style="margin-bottom: 10px;">
-                            <div class="titre-et-ville" style="flex: 1;">
-                                <h4 style="margin-bottom: 5px; font-size: 1.2rem;">{{ offre.titre }}</h4>
-                                <h5 style="color: #38bdf8; margin-bottom: 10px; font-weight: normal;">{{ offre.entreprise_nom }}</h5>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <span class="badge">📍 {{ offre.ville }}</span>
-                                    
-                                    {% if offre.niveau_requis %}
-                                        <span class="badge" style="background: rgba(255,255,255,0.05);">🎓 {{ offre.niveau_requis }}</span>
-                                    {% endif %}
-
-                                    {% if offre.duree %}
-                                        <span class="badge" style="background: rgba(255,255,255,0.05);">⏱️
-                                            {% if offre.duree >= 12 %}
-                                                {% set annees = (offre.duree / 12)|round(0, 'floor') %}
-                                                {% set mois_restants = offre.duree % 12 %}
-                                                {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
-                                            {% else %}
-                                                {{ offre.duree }} mois
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% if session.id_user is defined and session.role == 3 %}
-                            <a href="/wishlist/toggle?id={{ offre.id }}" 
-                            class="wishlist-btn" 
-                            onclick="localStorage.setItem('scrollPos', window.scrollY);"
-                            style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }}; text-decoration: none; font-size: 1.5rem;">
-                            {{ offre.id in wishlist ? '❤️' : '🤍' }}
-                            </a>    
-                            {% endif %}                    
-                        </div>
-                        <p class="texte-offre" style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; flex-grow: 1;">
-                            {{ offre.description|length > 150 ? offre.description|slice(0, 150) ~ '...' : offre.description }}
-                        </p>
-                        <div class="actions-offre" style="margin-top: auto;">
-                            <a class="btn-simple primary" style="padding: 8px 20px;" href="/offre/{{ offre.id }}">Découvrir l'offre</a>
-                        </div>
-                    </article>
+                    {# BOUM ! Même design parfait que la recherche 👇 #}
+                    {% include 'offers/_card.twig' %}
+                {% else %}
+                    <p>Aucune offre disponible pour le moment.</p>
+                {% endfor %}
+            </div>
                 {% else %}
                     <div class="card" style="padding: 30px; text-align: center;">
                         <p style="color: #94a3b8; font-style: italic;">Aucune offre disponible pour le moment.</p>

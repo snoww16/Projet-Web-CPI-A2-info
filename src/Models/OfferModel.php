@@ -95,7 +95,7 @@ class OfferModel extends Model {
 
     public function getOfferById($id) {
         $sql = "SELECT o.id_offre AS id, o.titre, o.description AS offre_desc, o.remuneration, o.date_debut,
-                       o.ville, o.duree, o.type_contrat, o.niveau_requis, o.id_entreprise,
+                       o.ville, o.duree, o.type_contrat, o.niveau_requis, o.domaine, o.id_entreprise,
                        e.nom AS entreprise_nom, e.description AS entreprise_desc, e.logo_path,
                        GROUP_CONCAT(c.nom_competence SEPARATOR ', ') AS competences,
                        (SELECT COUNT(*) FROM Candidature cand WHERE cand.id_offre = o.id_offre) AS nb_candidatures,
@@ -242,5 +242,11 @@ class OfferModel extends Model {
         ")->fetchAll(\PDO::FETCH_ASSOC);
 
         return $stats;
+    }
+
+    public function getVilles() {
+        $sql = "SELECT DISTINCT ville FROM Offre WHERE ville IS NOT NULL AND ville != '' ORDER BY ville ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 }

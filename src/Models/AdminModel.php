@@ -30,8 +30,16 @@ class AdminModel extends Model {
     }
 
     public function getOffres($limit = 15, $offset = 0) {
-        $sql = "SELECT id_offre AS id, titre AS nom FROM Offre ORDER BY date_offre DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
-        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        // On récupère TOUTES les infos utiles pour les badges
+        $sql = "SELECT o.id_offre AS id, o.titre, o.ville, o.duree, o.type_contrat, o.remuneration, o.niveau_requis, o.domaine,
+                       e.nom AS entreprise_nom, e.logo_path 
+                FROM Offre o 
+                JOIN Entreprise e ON o.id_entreprise = e.id_entreprise 
+                ORDER BY o.id_offre DESC 
+                LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     public function countOffres() {
         return $this->db->query("SELECT COUNT(*) as total FROM Offre")->fetch(PDO::FETCH_ASSOC)['total'];
@@ -64,20 +72,14 @@ class AdminModel extends Model {
 
     // Pour l'offre, je mets id_entreprise = 1 par défaut pour tes tests. 
     // Plus tard, on ajoutera un menu déroulant pour choisir l'entreprise !
-    public function creerOffre($titre, $description, $remuneration, $date_debut, $id_entreprise, $ville, $duree, $type_contrat, $domaine) {
-        $sql = "INSERT INTO Offre (titre, description, remuneration, date_debut, id_entreprise, ville, duree, type_contrat, domaine, date_offre) 
-                VALUES (:titre, :desc, :remun, :date_debut, :id_entreprise, :ville, :duree, :type_contrat, :domaine, CURDATE())";
+    public function creerOffre($titre, $description, $remuneration, $date_debut, $id_entreprise, $ville, $duree, $type_contrat, $domaine, $niveau_requis) {
+        $sql = "INSERT INTO Offre (titre, description, remuneration, date_debut, id_entreprise, ville, duree, type_contrat, domaine, niveau_requis)
+                VALUES (:titre, :desc, :remun, :date_deb, :id_e, :ville, :duree, :type, :domaine, :niveau)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'titre' => $titre, 
-            'desc' => $description, 
-            'remun' => $remuneration, 
-            'date_debut' => $date_debut,
-            'id_entreprise' => $id_entreprise,
-            'ville' => $ville,
-            'duree' => $duree,
-            'type_contrat' => $type_contrat,
-            'domaine' => $domaine
+        return $stmt->execute([
+            'titre' => $titre, 'desc' => $description, 'remun' => $remuneration, 'date_deb' => $date_debut,
+            'id_e' => $id_entreprise, 'ville' => $ville, 'duree' => $duree, 'type' => $type_contrat,
+            'domaine' => $domaine, 'niveau' => $niveau_requis
         ]);
     }
 
@@ -116,5 +118,53 @@ class AdminModel extends Model {
             'domaine' => $domaine,
             'id' => $id
         ]);
+    }
+
+    // Récupérer les utilisateurs avec filtres (Barre de recherche)
+    public function getUtilisateursByRoleFiltered($id_role, $filters = [], $limit = 15, $offset = 0) {
+        $sql = "SELECT id_user, nom, prenom, email, statut_recherche, photo_path FROM Utilisateur WHERE id_role = :role";
+        $params = ['role' => $id_role];
+
+        if (!empty($filters['q'])) {
+            $sql .= " AND (nom LIKE :q OR prenom LIKE :q OR email LIKE :q)";
+            $params['q'] = '%' . $filters['q'] . '%';
+        }
+        
+        if (!empty($filters['statut']) && $id_role == 3) {
+            $sql .= " AND statut_recherche = :statut";
+            $params['statut'] = $filters['statut'];
+        }
+
+        $sql .= " ORDER BY nom ASC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Compter pour la pagination avec les filtres
+    public function countUtilisateursByRoleFiltered($id_role, $filters = []) {
+        $sql = "SELECT COUNT(*) FROM Utilisateur WHERE id_role = :role";
+        $params = ['role' => $id_role];
+
+        if (!empty($filters['q'])) {
+            $sql .= " AND (nom LIKE :q OR prenom LIKE :q OR email LIKE :q)";
+            $params['q'] = '%' . $filters['q'] . '%';
+        }
+        if (!empty($filters['statut']) && $id_role == 3) {
+            $sql .= " AND statut_recherche = :statut";
+            $params['statut'] = $filters['statut'];
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchColumn();
+    }
+
+    // Mettre à jour le statut d'un étudiant
+    public function updateStatutRecherche($id_user, $statut) {
+        $sql = "UPDATE Utilisateur SET statut_recherche = :statut WHERE id_user = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['statut' => $statut, 'id' => $id_user]);
     }
 }

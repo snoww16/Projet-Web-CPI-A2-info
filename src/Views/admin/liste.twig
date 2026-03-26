@@ -1,56 +1,206 @@
 {% extends 'layout.twig' %}
-{% block title %}Gestion des {{ type }}{% endblock %}
+{% block title %}Gestion des {{ type|capitalize }} - CESI Ton Stage{% endblock %}
 
 {% block content %}
-<div class="entete-page">
-    <h2 style="text-transform: capitalize;">Gestion : {{ type }}</h2>
-    
-    {% if session.role == 1 or (session.role == 2 and type != 'pilotes') %}
-        <a href="/admin/{{ type }}/creer" class="btn-appliquer" style="margin-top: 15px; display: inline-block;">+ Créer nouveau</a>
-    {% endif %}
-</div>
+<section class="entete-page">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>Gestion des {{ type|capitalize }}</h2>
+        <a href="/admin/{{ type }}/creer" class="btn-appliquer">+ Créer {{ type == 'entreprises' ? 'une' : 'un' }} {{ type|slice(0, -1) }}</a>
+    </div>
+</section>
 
-<div class="container" style="max-width: 900px;">
-    
-    {% for item in items %}
-    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 25px;">
+<section class="zone-principale">
+    <div class="container" style="max-width: 1000px;">
         
-        <div class="infos-entite">
-            <h3 style="margin: 0; font-size: 1.2rem;">{{ item.nom }}</h3>
-            <p class="hint" style="margin: 0;">ID: {{ item.id }}</p>
-        </div>
+        <div class="card" style="margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.02);">
+            <form method="GET" style="display: flex; flex-direction: column; gap: 15px;">
+                
+                {% if type in ['etudiants', 'pilotes', 'entreprises'] %}
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" name="q" placeholder="Rechercher..." value="{{ queryParams.q|default('') }}" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; min-width: 250px;">
+                        
+                        {% if type == 'etudiants' %}
+                        <select name="statut" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Tous les statuts</option>
+                            <option value="En recherche" {% if queryParams.statut == 'En recherche' %}selected{% endif %}>En recherche</option>
+                            <option value="En entretien" {% if queryParams.statut == 'En entretien' %}selected{% endif %}>En entretien</option>
+                            <option value="Stage trouvé" {% if queryParams.statut == 'Stage trouvé' %}selected{% endif %}>Stage trouvé</option>
+                        </select>
+                        {% endif %}
+                    </div>
+                
+                {% elseif type == 'offres' %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <input type="text" name="q" placeholder="Mots-clés (titre, desc...)" value="{{ queryParams.q|default('') }}" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;">
+                        
+                        <select name="ville" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Toutes les villes</option>
+                            {% for v in villes %}
+                                <option value="{{ v }}" {% if queryParams.ville == v %}selected{% endif %}>{{ v }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <select name="type_contrat" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Tous les contrats</option>
+                            <option value="Stage" {% if queryParams.type_contrat == 'Stage' %}selected{% endif %}>Stage</option>
+                            <option value="Alternance" {% if queryParams.type_contrat == 'Alternance' %}selected{% endif %}>Alternance</option>
+                        </select>
 
-        <div class="actions-entite" style="display: flex; align-items: center; gap: 10px;">
-            <a href="{% if type == 'offres' %}/offre/{{ item.id }}{% else %}/profil/{{ type }}/{{ item.id }}{% endif %}" class="btn-simple" style="padding: 8px 15px; border-color: #38bdf8; color: #38bdf8; display: flex; align-items: center; height: 42px; box-sizing: border-box;">👁️ Afficher</a>
-            
-            <a href="/admin/{{ type }}/modifier/{{ item.id }}" class="btn-simple" style="padding: 8px 15px; display: flex; align-items: center; height: 42px; box-sizing: border-box;">✏️ Modifier</a>
-            
-            <form action="/admin/{{ type }}/supprimer/{{ item.id }}" method="POST" style="margin: 0; display: flex; align-items: center; height: 42px;" onsubmit="return confirm('⚠️ ATTENTION : Êtes-vous sûr de vouloir supprimer définitivement cet élément ?');">
-                <button type="submit" class="btn-simple" style="padding: 8px 15px; border-color: #ff6b6b; color: #ff6b6b; background: transparent; cursor: pointer; display: flex; align-items: center; height: 42px; box-sizing: border-box;">🗑️ Supprimer</button>
+                        <select name="domaine" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Tous les domaines</option>
+                            {% for dom in domaines %}
+                                <option value="{{ dom }}" {% if queryParams.domaine == dom %}selected{% endif %}>{{ dom }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="niveau_requis" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Tous les niveaux</option>
+                            {% for niv in niveaux %}
+                                <option value="{{ niv }}" {% if queryParams.niveau_requis == niv %}selected{% endif %}>{{ niv }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div>
+                            <select id="duree_plage" name="duree_plage" onchange="updateAdminDuree(this.value)" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                                <option value="">Toutes les durées</option>
+                                <option value="1-2" {% if queryParams.duree_plage == '1-2' %}selected{% endif %}>Stage court (1-2 mois)</option>
+                                <option value="3-4" {% if queryParams.duree_plage == '3-4' %}selected{% endif %}>Stage moyen (3-4 mois)</option>
+                                <option value="5-6" {% if queryParams.duree_plage == '5-6' %}selected{% endif %}>Stage long (5-6 mois)</option>
+                                <option value="12-12" {% if queryParams.duree_plage == '12-12' %}selected{% endif %}>Alternance (1 an)</option>
+                                <option value="24-24" {% if queryParams.duree_plage == '24-24' %}selected{% endif %}>Alternance (2 ans)</option>
+                            </select>
+                            <input type="hidden" name="duree_min" id="duree_min" value="{{ queryParams.duree_min|default('') }}">
+                            <input type="hidden" name="duree_max" id="duree_max" value="{{ queryParams.duree_max|default('') }}">
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div style="display: flex; gap: 15px; margin-top: 5px;">
+                    <button type="submit" class="btn-appliquer" style="padding: 10px 20px;">Rechercher</button>
+                    {% if queryParams|length > 1 or queryParams.q is defined %}
+                        <a href="/admin/{{ type }}" class="btn-reset" style="padding: 10px 20px;">Réinitialiser</a>
+                    {% endif %}
+                </div>
             </form>
         </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for item in items %}
+            <article class="card" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 15px 25px;">
+                
+                <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                    <div style="width: 55px; height: 55px; border-radius: 50%; overflow: hidden; background: #38bdf8; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.1);">
+                        {% if item.photo_path is defined and item.photo_path %}
+                            <img src="{{ item.photo_path }}" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% elseif item.logo_path is defined and item.logo_path %}
+                            <img src="{{ item.logo_path }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {% set fallbackName = (type == 'entreprises') ? item.nom : ((type == 'offres') ? item.entreprise_nom : (item.nom ~ ' ' ~ item.prenom)) %}
+                            <img src="https://ui-avatars.com/api/?name={{ fallbackName|url_encode }}&background=38bdf8&color=0F172A&bold=true" alt="Avatar" style="width: 100%; height: 100%;">
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <h4 style="margin: 0; color: #fff; font-size: 1.15rem;">
+                            {% if type == 'entreprises' %}
+                                {{ item.nom }}
+                            {% elseif type == 'offres' %}
+                                {{ item.titre }} <span style="font-size: 0.9rem; color: #94a3b8; font-weight: normal;">chez {{ item.entreprise_nom }}</span>
+                            {% else %}
+                                {{ item.nom|upper }} {{ item.prenom }}
+                            {% endif %}
+                        </h4>
+                        
+                        <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">
+                            {% if type in ['etudiants', 'pilotes'] %}
+                                📧 {{ item.email|default('Email non renseigné') }}
+                            {% elseif type == 'entreprises' %}
+                                📍 Entreprise partenaire
+                            {% elseif type == 'offres' %}
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 0.85rem; color: #cbd5e1;">
+                                    <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">📍 {{ item.ville|default('N/A') }}</span>
+                                    
+                                    {% if item.type_contrat %}
+                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">📜 {{ item.type_contrat }}</span>
+                                    {% endif %}
+                                    
+                                    {% if item.niveau_requis %}
+                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">🎓 {{ item.niveau_requis }}</span>
+                                    {% endif %}
+                                    
+                                    {% if item.duree and item.duree > 0 %}
+                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">⏱️ 
+                                            {% if item.duree >= 12 %}
+                                                {% set annees = (item.duree / 12)|round(0, 'floor') %}
+                                                {% set mois_restants = item.duree % 12 %}    
+                                                {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
+                                            {% else %}
+                                                {{ item.duree }} mois
+                                            {% endif %}
+                                        </span>
+                                    {% else %}
+                                        <span style="background: rgba(255,107,107,0.1); color: #ff6b6b; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,107,107,0.3);">⏱️ Durée à préciser</span>
+                                    {% endif %}
+                                    
+                                    {% if item.remuneration %}
+                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">💰 {{ item.remuneration }}€/m</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    
+                    {% if type == 'etudiants' %}
+                        {% set colorStatut = item.statut_recherche == 'Stage trouvé' ? '#10b981' : (item.statut_recherche == 'En entretien' ? '#f59e0b' : '#38bdf8') %}
+                        <span class="badge" style="background: {{ colorStatut }}22; color: {{ colorStatut }}; border: 1px solid {{ colorStatut }}88; padding: 8px 15px; font-weight: bold; white-space: nowrap;">
+                            {{ item.statut_recherche|default('En recherche') }}
+                        </span>
+                    {% endif %}
+
+                    {% set id_cle = item.id_user ?? item.id_entreprise ?? item.id_offre ?? item.id %}
+                    <a href="/admin/{{ type }}/modifier/{{ id_cle }}" class="btn-simple" style="padding: 8px 15px; font-size: 0.9rem;">✏️ Modifier</a>
+                    
+                    <form action="/admin/{{ type }}/supprimer/{{ id_cle }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');" style="margin:0;">
+                        <button type="submit" class="btn-simple" style="padding: 8px 15px; font-size: 0.9rem; color: #ff6b6b; border-color: rgba(255,107,107,0.3);">🗑️</button>
+                    </form>
+                </div>
+                
+            </article>
+            {% else %}
+                <div class="card" style="text-align: center; padding: 40px; color: #94a3b8;">
+                    Aucun résultat trouvé pour votre recherche.
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if totalPages is defined and totalPages > 0 %}
+        <div class="pagination">
+            <a href="?page=1{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
+            <a href="?page={{ currentPage - 1 }}{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
+
+            {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
+                <a href="?page={{ i }}{{ queryString }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
+            {% endfor %}
+
+            <a href="?page={{ currentPage + 1 }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
+            <a href="?page={{ totalPages }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
+        </div>
+        {% endif %}
     </div>
-    {% else %}
-        <p style="text-align: center;">Aucune donnée trouvée.</p>
-    {% endfor %}
+</section>
 
-    {% if totalPages is defined and totalPages > 0 %}
-    <div style="margin-top: 30px; text-align: center;">
-        <p class="hint">Page {{ currentPage }} sur {{ totalPages }}</p>
-    </div>
-    
-    <div class="pagination">
-        <a href="?page=1" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
-        <a href="?page={{ currentPage - 1 }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
+{% if type == 'offres' %}
+<script>
+    function updateAdminDuree(value) {
+        if (!value) { document.getElementById('duree_min').value = ''; document.getElementById('duree_max').value = ''; return; }
+        var plage = value.split('-');
+        document.getElementById('duree_min').value = plage[0];
+        document.getElementById('duree_max').value = plage[1];
+    }
+</script>
+{% endif %}
 
-        {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
-            <a href="?page={{ i }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
-        {% endfor %}
-
-        <a href="?page={{ currentPage + 1 }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
-        <a href="?page={{ totalPages }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
-    </div>
-    {% endif %}
-
-</div>
 {% endblock %}
