@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CESI Ton Stage{% endblock %}</title>
     
-    <link rel="icon" type="image/png" href="https://static.stage.local/img/CESI_ton_stage.png">
+    <link rel="icon" type="image/png" href="https://static.stage.local/img/CESI_ton_stage.png" size="150">
 
     <link rel="stylesheet" href="https://static.stage.local/css/style.css?v=3">
 </head>
@@ -14,7 +14,7 @@
         <div class="container-fluid nav-content">
             
             <a href="/" class="logo-container">
-                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo" style="height: 38px; width: auto;">
+                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo" style="height: 50px; width: auto;">
             </a>
 
             <button id="burger-btn" aria-label="Menu">☰</button>
@@ -32,7 +32,7 @@
 
                 <details class="menu-compte">
                     <summary class="bouton-compte" style="list-style: none;">
-                        <div class="avatar-compte" style="background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border-radius: 50%; width: 38px; height: 38px;">
+                        <div class="avatar-compte" style="background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border-radius: 50%; width: 50px; height: 50px;">
                             {% if session is defined and session.id_user %}
                                 {{ session.prenom|first|upper }}{{ session.nom|first|upper }}
                             {% else %}
@@ -49,7 +49,9 @@
                             </div>
                             <hr class="sep">
                             <a href="/profil">Mon Profil</a>
-                            <a href="/candidatures">Mes Candidatures</a>
+                            <a href="/mes-candidatures">Mes Candidatures</a>
+                            <a href="/mes-favoris" class="dropdown-item">Ma Wishlist</a>
+                            <div class="dropdown-divider"></div>
                             <hr class="sep">
                             <a href="/logout" style="color: #ff6b6b; font-weight: bold;">Se déconnecter</a>
                         {% else %}
@@ -152,5 +154,19 @@
             document.getElementById("cookie-banner").style.display = "none";
         }
     </script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // On vérifie si une position de scroll a été enregistrée
+        const scrollPos = localStorage.getItem('scrollPos');
+        if (scrollPos) {
+            // On remet la page exactement là où elle était
+            window.scrollTo(0, parseInt(scrollPos));
+            // On vide le stockage pour ne pas que ça reste au prochain chargement manuel
+            localStorage.removeItem('scrollPos');
+        }
+    });
+</script>
+
 </body>
 </html>

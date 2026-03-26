@@ -142,6 +142,83 @@ switch ($path) {
         header('Location: ' . $_SERVER['HTTP_REFERER']); 
         break;
 
+    case '/profil':
+        if (!isset($_SESSION['id_user'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $offerModel = new OfferModel();
+        
+        // On récupère toutes les données
+        $toutes_candidatures = $offerModel->getCandidaturesByUser($_SESSION['id_user']);
+        $toutes_favorites = $offerModel->getWishlistOffersByUser($_SESSION['id_user']);
+        
+        // On coupe les tableaux pour ne garder que les 3 plus récentes (le résumé)
+        $candidatures_resume = array_slice($toutes_candidatures, 0, 3);
+        $wishlist_resume = array_slice($toutes_favorites, 0, 3);
+
+        echo $twig->render('profil.twig', [
+            'candidatures_resume' => $candidatures_resume,
+            'wishlist_resume' => $wishlist_resume,
+            'total_candidatures' => count($toutes_candidatures),
+            'total_wishlist' => count($toutes_favorites)
+        ]);
+        break;
+        
+    case '/mes-favoris':
+        if (!isset($_SESSION['id_user'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $limit = 10; // On affiche 10 favoris par page
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+        $offset = ($page - 1) * $limit;
+
+        $offerModel = new OfferModel();
+        
+        $offres_favorites = $offerModel->getWishlistOffersByUser($_SESSION['id_user'], $limit, $offset);
+        $totalItems = $offerModel->countWishlistOffersByUser($_SESSION['id_user']);
+        $totalPages = ceil($totalItems / $limit);
+        
+        $mes_favoris_ids = $offerModel->getWishlistIdsByUser($_SESSION['id_user']);
+
+        echo $twig->render('offers/wishlist.twig', [
+            'offres' => $offres_favorites,
+            'wishlist' => $mes_favoris_ids,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'queryString' => '' // Pas de filtres de recherche ici
+        ]);
+        break;
+        
+    case '/mes-candidatures':
+        if (!isset($_SESSION['id_user'])) {
+            header('Location: /login');
+            exit;
+        }
+        
+        $limit = 10; // On affiche 10 candidatures par page
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+        $offset = ($page - 1) * $limit;
+
+        $offerModel = new OfferModel();
+        
+        $candidatures = $offerModel->getCandidaturesByUser($_SESSION['id_user'], $limit, $offset);
+        $totalItems = $offerModel->countCandidaturesByUser($_SESSION['id_user']);
+        $totalPages = ceil($totalItems / $limit);
+        
+        echo $twig->render('offers/mes-candidatures.twig', [
+            'candidatures' => $candidatures,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'queryString' => ''
+        ]);
+        break;
+
     case '/login':
         if (isset($_SESSION['id_user'])) {
             header('Location: /');

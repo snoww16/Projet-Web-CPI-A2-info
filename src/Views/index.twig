@@ -5,13 +5,12 @@
 <div class="container" style="padding-top: 30px; padding-bottom: 60px;">
 
     <section style="background: linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(15,23,42,1) 100%); padding: 60px 20px; text-align: center; border-radius: 15px; margin-bottom: 40px; border: 1px solid rgba(56,189,248,0.3); position: relative; overflow: hidden;">
-        <h1 style="font-size: 3rem; margin-bottom: 20px; color: #fff;">Trouvez le stage de vos rêves 🚀</h1>
+        <h1 style="font-size: 3rem; margin-bottom: 20px; color: #fff;">Trouvez le stage de vos rêves</h1>
         <p style="font-size: 1.2rem; color: #cbd5e1; max-width: 600px; margin: 0 auto 30px auto;">Accédez à des centaines d'offres exclusives pour les étudiants du CESI. Développez vos compétences et lancez votre carrière dès aujourd'hui.</p>
         <a href="/offres" class="btn-appliquer" style="font-size: 1.2rem; padding: 15px 40px;">Lancer la recherche</a>
     </section>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 50px;">
-        
         {% if session.id_user %}
             <div class="card" style="padding: 30px; text-align: center; background: rgba(255,255,255,0.03);">
                 <div style="font-size: 3rem; margin-bottom: 15px;">👤</div>
@@ -46,10 +45,9 @@
     </div>
 
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start;">
-        
         <section>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                <h2 style="margin: 0; font-size: 1.5rem;">🔥 Dernières offres de stage</h2>
+                <h2 style="margin: 0; font-size: 1.5rem;">🔥 Dernières offres</h2>
                 <a href="/offres" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Voir tout ›</a>
             </div>
 
@@ -62,11 +60,25 @@
                                 <h5 style="color: #38bdf8; margin-bottom: 10px; font-weight: normal;">{{ offre.entreprise_nom }}</h5>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                     <span class="badge">📍 {{ offre.ville }}</span>
-                                    {% if offre.duree %}<span class="badge">⏱️ {{ offre.duree }}</span>{% endif %}
+                                    {% if offre.duree %}
+                                        <span class="badge" style="background: rgba(255,255,255,0.05);">⏱️
+                                            {% if offre.duree >= 12 %}
+                                                {% set annees = (offre.duree / 12)|round(0, 'floor') %}
+                                                {% set mois_restants = offre.duree % 12 %}
+                                                {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
+                                            {% else %}
+                                                {{ offre.duree }} mois
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <a href="/wishlist/toggle?id={{ offre.id }}" class="wishlist-btn" style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }};">♥</a>
-                        </div>
+                            <a href="/wishlist/toggle?id={{ offre.id }}" 
+                            class="wishlist-btn" 
+                            onclick="localStorage.setItem('scrollPos', window.scrollY);"
+                            style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }}; text-decoration: none; font-size: 1.5rem;">
+                            {{ offre.id in wishlist ? '❤️' : '🤍' }}
+                            </a>                        </div>
                         <p class="texte-offre" style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; flex-grow: 1;">
                             {{ offre.description|length > 150 ? offre.description|slice(0, 150) ~ '...' : offre.description }}
                         </p>
@@ -83,21 +95,17 @@
         </section>
 
         <aside class="card" style="padding: 0; overflow: hidden;">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Étudiants travaillant ensemble" style="width: 100%; height: 200px; object-fit: cover; display: block;">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Conseils" style="width: 100%; height: 200px; object-fit: cover; display: block;">
             <div style="padding: 25px;">
                 <h3 style="margin-bottom: 15px;">💡 Conseils CV & Entretien</h3>
-                <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
-                    Un bon CV fait toute la différence ! Assurez-vous de mettre en avant vos projets d'école, vos compétences techniques, et adaptez toujours votre lettre de motivation à l'entreprise ciblée.
-                </p>
+                <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">Un bon CV fait toute la différence ! Assurez-vous de mettre en avant vos projets d'école et vos compétences techniques.</p>
                 <ul style="color: #cbd5e1; font-size: 0.9rem; padding-left: 20px; margin-bottom: 20px;">
                     <li style="margin-bottom: 8px;">Restez concis (1 page max).</li>
-                    <li style="margin-bottom: 8px;">Préparez vos entretiens à l'avance.</li>
-                    <li>Relancez les recruteurs après 7 jours.</li>
+                    <li style="margin-bottom: 8px;">Préparez vos entretiens.</li>
+                    <li>Relancez après 7 jours.</li>
                 </ul>
             </div>
         </aside>
-
     </div>
-    
 </div>
 {% endblock %}

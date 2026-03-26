@@ -1,5 +1,4 @@
 {% extends 'layout.twig' %}
-
 {% block title %}Recherche de stage - CESI Ton Stage{% endblock %}
 
 {% block content %}
@@ -13,42 +12,28 @@
 <section class="zone-principale">
     <div class="container">
         <div class="bloc-contenu bloc-sans-survol">
-            
             <div class="mobile-filter-bar">
                 <button id="btn-toggle-filtres" class="btn-simple">⚙️ Afficher les filtres</button>
             </div>
 
             <div class="mise-en-page-recherche">
-
-                <aside class="zone-filtres" id="zone-filtres" aria-label="Filtres de recherche">
+                <aside class="zone-filtres" id="zone-filtres">
                     <button id="btn-close-filtres" class="btn-simple secondary">✖ Fermer les filtres</button>
                     <h3>Filtres</h3>
                     <form action="/offres" method="get" class="formulaire">
                         <div class="ligne-champ">
                             <label for="motscles">Mots-clés</label>
-                            <input id="motscles" name="q" type="search" placeholder="ex : dev web, data..." value="{{ queryParams.q }}"/>
+                            <input id="motscles" name="q" type="search" placeholder="ex : dev web..." value="{{ queryParams.q }}"/>
                         </div>
                         <div class="ligne-champ">
                             <label for="ville">Ville</label>
                             <select id="ville" name="ville">
                                 <option value="">Toutes les villes</option>
-                                <option value="Angoulême" {{ queryParams.ville == 'Angoulême' ? 'selected' : '' }}>Angoulême</option>
-                                <option value="Bordeaux" {{ queryParams.ville == 'Bordeaux' ? 'selected' : '' }}>Bordeaux</option>
-                                <option value="Lyon" {{ queryParams.ville == 'Lyon' ? 'selected' : '' }}>Lyon</option>
                                 <option value="Paris" {{ queryParams.ville == 'Paris' ? 'selected' : '' }}>Paris</option>
-                                <option value="Toulouse" {{ queryParams.ville == 'Toulouse' ? 'selected' : '' }}>Toulouse</option>
-                                <option value="Nantes" {{ queryParams.ville == 'Nantes' ? 'selected' : '' }}>Nantes</option>
+                                <option value="Lyon" {{ queryParams.ville == 'Lyon' ? 'selected' : '' }}>Lyon</option>
+                                <option value="Bordeaux" {{ queryParams.ville == 'Bordeaux' ? 'selected' : '' }}>Bordeaux</option>
                             </select>
                         </div>
-                        <div class="ligne-champ">
-                            <label for="type_contrat">Contrat</label>
-                            <select id="type_contrat" name="type_contrat">
-                                <option value="">Tous</option>
-                                <option value="Stage" {{ queryParams.type_contrat == 'Stage' ? 'selected' : '' }}>Stage</option>
-                                <option value="Alternance" {{ queryParams.type_contrat == 'Alternance' ? 'selected' : '' }}>Alternance</option>
-                            </select>
-                        </div>
-                        
                         <div class="ligne-champ">
                             <label for="domaine">Domaine</label>
                             <select id="domaine" name="domaine">
@@ -58,101 +43,68 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        
                         <div class="ligne-champ">
-                            <label for="duree">Durée</label>
-                            <input id="duree" name="duree" type="text" placeholder="ex : 4-6 mois" value="{{ queryParams.duree }}"/>
+                            <label for="duree">Durée minimum (mois)</label>
+                            <select id="duree" name="duree">
+                                <option value="">Peu importe</option>
+                                <option value="1" {{ queryParams.duree == '1' ? 'selected' : '' }}>1-2 mois</option>
+                                <option value="4" {{ queryParams.duree == '4' ? 'selected' : '' }}>4 mois+</option>
+                                <option value="6" {{ queryParams.duree == '6' ? 'selected' : '' }}>6 mois+</option>
+                                <option value="12" {{ queryParams.duree == '12' ? 'selected' : '' }}>1 an+</option>
+                                <option value="24" {{ queryParams.duree == '24' ? 'selected' : '' }}>2 ans+</option>
+                            </select>
                         </div>
-                        <div class="ligne-champ">
-                            <label for="date-debut">Date de début</label>
-                            <input id="date-debut" name="date_debut" type="date" value="{{ queryParams.date_debut }}"/>
-                        </div>
-                        
-                        <div class="actions-formulaire" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px; position: relative; z-index: 10;">
-                            <button class="btn-appliquer" type="submit" style="width: 100%; cursor: pointer;">Appliquer</button>
-                            <a href="/offres" class="btn-reset" style="display: block; text-align: center; width: 100%; box-sizing: border-box;">Réinitialiser</a>
+                        <div class="actions-formulaire" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                            <button class="btn-appliquer" type="submit" style="width: 100%;">Appliquer</button>
+                            <a href="/offres" class="btn-reset" style="display: block; text-align: center; width: 100%;">Réinitialiser</a>
                         </div>
                     </form>
                 </aside>
 
-                <section class="zone-resultats" aria-label="Résultats">
-                    <h3>Offres</h3>
-                    
+                <section class="zone-resultats">
                     {% for offre in offres %}
                     <article class="offre" style="position: relative; padding: 25px; border-left: 4px solid #38bdf8; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; border-radius: 0 10px 10px 0;">
-                        
-                        <div class="entete-offre" style="display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; margin-bottom: 5px;">
-                            
-                            <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
-                                {% if offre.logo_path %}
-                                    <img src="{{ offre.logo_path }}" alt="Logo {{ offre.entreprise_nom }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                                {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{ offre.entreprise_nom|url_encode }}&background=38bdf8&color=0F172A&size=64&bold=true" alt="Placeholder Logo" style="width: 100%; height: 100%; display: block;">
-                                {% endif %}
+                        <div class="entete-offre" style="display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center;">
+                            <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <img src="{{ offre.logo_path|default('https://ui-avatars.com/api/?name=' ~ offre.entreprise_nom|url_encode) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
-
                             <div>
-                                <h4 style="margin: 0 0 3px 0; font-size: 1.3rem;">{{ offre.titre }}</h4>
-                                <div style="color: #cbd5e1; font-weight: 500; font-size: 1rem;">🏢 {{ offre.entreprise_nom }}</div>
+                                <h4 style="margin: 0; font-size: 1.3rem;">{{ offre.titre }}</h4>
+                                <div style="color: #cbd5e1;">🏢 {{ offre.entreprise_nom }}</div>
                             </div>
-
-                            <a href="/wishlist/toggle?id={{ offre.id }}" class="wishlist-btn" style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.2)' }}; font-size: 1.5rem; text-decoration: none; transition: 0.2s;" title="Ajouter aux favoris">
-                                {% if offre.id in wishlist %}❤️{% else %}🤍{% endif %}
+                            <a href="/wishlist/toggle?id={{ offre.id }}" 
+                                class="wishlist-btn" 
+                                onclick="localStorage.setItem('scrollPos', window.scrollY);"
+                                style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }}; text-decoration: none; font-size: 1.5rem;">
+                                {{ offre.id in wishlist ? '❤️' : '🤍' }}
                             </a>
                         </div>
 
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                            <span class="badge" style="background: rgba(255,255,255,0.05);">📍 {{ offre.ville }}</span>
-                            {% if offre.type_contrat %}<span class="badge" style="background: rgba(255,255,255,0.05);">📜 {{ offre.type_contrat }}</span>{% endif %}
-                            {% if offre.duree %}<span class="badge" style="background: rgba(255,255,255,0.05);">⏱️ {{ offre.duree }}</span>{% endif %}
-                            {% if offre.remuneration %}<span class="badge" style="background: rgba(255,255,255,0.05);">💰 {{ offre.remuneration }}€/m</span>{% endif %}
-                            
-                            <span class="badge" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
-                                👥 {{ offre.nb_candidatures }} postulant{{ offre.nb_candidatures > 1 ? 's' : '' }}
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="badge">📍 {{ offre.ville }}</span>
+                            {% if offre.duree %}
+                            <span class="badge" style="background: rgba(255,255,255,0.05);">⏱️
+                                {% if offre.duree >= 12 %}
+                                    {% set annees = (offre.duree / 12)|round(0, 'floor') %}
+                                    {% set mois_restants = offre.duree % 12 %}    
+                                    {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
+                                {% else %}
+                                    {{ offre.duree }} mois
+                                {% endif %}
                             </span>
+                            {% endif %}
                         </div>
 
-                        {% if offre.competences %}
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            {% for comp in offre.competences|split(', ') %}
-                                <span style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem;">
-                                    {{ comp }}
-                                </span>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                        <p style="color: #cbd5e1; font-size: 0.95rem;">{{ offre.description|length > 180 ? offre.description|slice(0, 180) ~ '...' : offre.description }}</p>
 
-                        <p class="texte-offre" style="margin: 0; color: #cbd5e1; line-height: 1.5; font-size: 0.95rem;">
-                            {{ offre.description|length > 180 ? offre.description|slice(0, 180) ~ '...' : offre.description }}
-                        </p>
-
-                        <div class="actions-offre" style="display: flex; gap: 10px; margin-top: 10px;">
-                            <a class="btn-simple" style="padding: 8px 18px;" href="/offre/{{ offre.id }}">Voir les détails</a>
-                            <a class="btn-simple primary" style="padding: 8px 18px; font-weight: bold;" href="/postuler/{{ offre.id }}">POSTULER</a>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <a class="btn-simple" href="/offre/{{ offre.id }}">Voir les détails</a>
+                            <a class="btn-simple primary" href="/postuler/{{ offre.id }}">POSTULER</a>
                         </div>
                     </article>
-                    {% else %}
-                        <p>Aucune offre ne correspond à votre recherche.</p>
                     {% endfor %}
 
-                    {% if totalPages is defined and totalPages > 0 %}
-                    <div style="margin-top: 40px; text-align: center;">
-                        <p class="hint">Page {{ currentPage }} sur {{ totalPages }}</p>
-                    </div>
-                    
-                    <div class="pagination">
-                        <a href="?page=1{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
-                        <a href="?page={{ currentPage - 1 }}{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
-
-                        {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
-                            <a href="?page={{ i }}{{ queryString }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
-                        {% endfor %}
-
-                        <a href="?page={{ currentPage + 1 }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
-                        <a href="?page={{ totalPages }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
-                    </div>
-                    {% endif %}
-
+                    {# Pagination... #}
                 </section>
             </div>
         </div>
