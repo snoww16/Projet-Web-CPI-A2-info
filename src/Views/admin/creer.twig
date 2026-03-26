@@ -120,7 +120,7 @@
             {% endif %}
 
             <div style="display: flex; gap: 15px; margin-top: 30px;">
-                <a href="/admin/{{ type }}" class="btn-reset" style="flex: 1; text-align: center; padding: 12px;">Annuler</a>
+                <a href="javascript:history.back()" class="btn-reset" style="text-align: center;">Annuler</a>
                 <button type="submit" class="btn-appliquer" style="flex: 2; padding: 12px; font-size: 1.1rem;">
                     {{ is_edit ? 'Enregistrer les modifications' : "Créer l'entité" }}
                 </button>

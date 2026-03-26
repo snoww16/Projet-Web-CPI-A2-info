@@ -55,4 +55,27 @@ class EntrepriseModel extends Model {
         $stmt->execute($params);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
+
+    public function ajouterEvaluation($id_entreprise, $id_user, $note, $commentaire) {
+        $sql = "INSERT INTO Evaluation_Entreprise (id_entreprise, id_user, note, commentaire, date_evaluation)
+                VALUES (:id, :user, :note, :com, NOW())";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id' => $id_entreprise,
+            'user' => $id_user,
+            'note' => $note,
+            'com' => $commentaire
+        ]);
+    }
+
+    public function getEvaluationsByEntreprise($id_entreprise) {
+        $sql = "SELECT e.note, e.commentaire, DATE_FORMAT(e.date_evaluation, '%d/%m/%Y') as date_eval, u.prenom, u.nom, u.id_role
+                FROM Evaluation_Entreprise e
+                JOIN Utilisateur u ON e.id_user = u.id_user
+                WHERE e.id_entreprise = :id
+                ORDER BY e.date_evaluation DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id_entreprise]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

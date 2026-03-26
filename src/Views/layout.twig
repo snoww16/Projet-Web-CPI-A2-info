@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CESI Ton Stage{% endblock %}</title>
     
-    <link rel="icon" type="image/png" href="https://static.stage.local/img/CESI_ton_stage.png" size="150">
-
-    <link rel="stylesheet" href="https://static.stage.local/css/style.css?v=3">
+    <link rel="icon" type="image/png" href="/img/CESI_ton_stage.png" size="150">
+    <link rel="stylesheet" href="/css/style.css?v={{ 'now'|date('U') }}">
 </head>
 <body>
     <header class="navbar">
         <div class="container-fluid nav-content">
-            
+            <button id="burger-btn" aria-label="Menu" class="burger-icon">☰</button>
+
             <a href="/" class="logo-container">
-                <img src="https://static.stage.local/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo" style="height: 50px; width: auto;">
+                <img src="/img/CESI_ton_stage.png" alt="CESI Ton Stage" class="navbar-logo">
             </a>
 
-            <button id="burger-btn" aria-label="Menu">☰</button>
-
-            <nav aria-label="Navigation principale" id="nav-menu">
+            <nav id="nav-menu" class="mobile-nav">
                 <ul class="nav-links">
                     <li><a href="/">Accueil</a></li>
                     <li><a href="/offres">Recherche de stage</a></li>
@@ -28,11 +26,10 @@
                 </ul>
             </nav>
 
-            <div style="display: flex; align-items: center; gap: 20px;">
-
+            <div class="nav-right">
                 <details class="menu-compte">
                     <summary class="bouton-compte" style="list-style: none;">
-                        <div class="avatar-compte" style="background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border-radius: 50%; width: 50px; height: 50px;">
+                        <div class="avatar-compte">
                             {% if session is defined and session.id_user %}
                                 {{ session.prenom|first|upper }}{{ session.nom|first|upper }}
                             {% else %}
@@ -40,7 +37,6 @@
                             {% endif %}
                         </div>
                     </summary>
-                    
                     <div class="liste-compte">
                         {% if session is defined and session.id_user %}
                             <div style="padding: 10px 12px; color: #38bdf8; font-size: 0.9rem; text-align: center;">
@@ -49,8 +45,18 @@
                             </div>
                             <hr class="sep">
                             <a href="/profil">Mon Profil</a>
-                            <a href="/mes-candidatures">Mes Candidatures</a>
-                            <a href="/mes-favoris" class="dropdown-item">Ma Wishlist</a>
+                            
+                            {# UNIQUEMENT POUR LES ÉTUDIANTS (Rôle 3) #}
+                            {% if session.role == 3 %}
+                                <a href="/mes-candidatures">Mes Candidatures</a>
+                                <a href="/mes-favoris">Ma Wishlist</a>
+                            {% endif %}
+
+                            {# UNIQUEMENT POUR LES ADMINS ET PILOTES (Rôles 1 et 2) #}
+                            {% if session.role in [1, 2] %}
+                                <a href="/admin" style="color: #10b981;">⚙️ Administration</a>
+                            {% endif %}
+
                             <div class="dropdown-divider"></div>
                             <hr class="sep">
                             <a href="/logout" style="color: #ff6b6b; font-weight: bold;">Se déconnecter</a>
@@ -67,16 +73,14 @@
         {% block content %}{% endblock %}
     </main>
 
-    <script src="https://static.stage.local/js/script.js"></script>
+    <script src="/js/script.js"></script>
 
     <footer style="background: #0b1121; padding: 60px 20px 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
         <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
-            
             <div>
                 <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">CESI<span style="color: #38bdf8;">Ton Stage</span></h3>
                 <p style="color: #94a3b8; line-height: 1.6;">La plateforme de mise en relation entre étudiants et entreprises pour trouver le stage idéal.</p>
             </div>
-
             <div>
                 <h4 style="color: #fff; margin-bottom: 20px;">Navigation</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
@@ -86,7 +90,6 @@
                     <li><a href="/a-propos" style="color: #94a3b8; text-decoration: none; transition: 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'">À propos de nous</a></li>
                 </ul>
             </div>
-
             <div>
                 <h4 style="color: #fff; margin-bottom: 20px;">Informations Légales</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
@@ -96,7 +99,6 @@
                 </ul>
             </div>
         </div>
-
         <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); color: #64748b; font-size: 0.9rem;">
             &copy; {{ "now"|date("Y") }} Projet CESI Ton Stage. Tous droits réservés.
         </div>
@@ -104,7 +106,7 @@
 
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; padding: 25px 20px; z-index: 9999; box-shadow: 0 -10px 25px rgba(0,0,0,0.5); border-top: 2px solid #38bdf8; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; text-align: center;">
         <p style="color: #cbd5e1; margin: 0; max-width: 800px; line-height: 1.5; font-size: 0.95rem;">
-            <strong>Vos données, votre choix.</strong> Nous utilisons des cookies pour assurer le bon fonctionnement du site, analyser notre trafic et améliorer votre expérience (connexion, favoris). En cliquant sur "Accepter", vous consentez à l'utilisation de ces cookies.
+            <strong>Vos données, votre choix.</strong> Nous utilisons des cookies pour assurer le bon fonctionnement du site, analyser notre trafic et améliorer votre expérience.
         </p>
         <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
             <button onclick="acceptCookies()" style="background: #38bdf8; color: #0f172a; font-weight: bold; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; transition: 0.2s;">Tout accepter</button>
@@ -113,7 +115,6 @@
     </div>
 
     <script>
-        // Fonction pour créer un cookie côté navigateur
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -123,8 +124,6 @@
             }
             document.cookie = name + "=" + (value || "")  + expires + "; path=/";
         }
-
-        // Fonction pour lire un cookie
         function getCookie(name) {
             let nameEQ = name + "=";
             let ca = document.cookie.split(';');
@@ -135,38 +134,20 @@
             }
             return null;
         }
-
-        // Au chargement de la page, si aucun choix n'a été fait, on affiche la bannière
         document.addEventListener("DOMContentLoaded", function() {
-            if (!getCookie("cookieConsent")) {
-                document.getElementById("cookie-banner").style.display = "flex";
+            if (!getCookie("cookieConsent")) { document.getElementById("cookie-banner").style.display = "flex"; }
+        });
+        function acceptCookies() { setCookie("cookieConsent", "accepted", 365); document.getElementById("cookie-banner").style.display = "none"; }
+        function refuseCookies() { setCookie("cookieConsent", "refused", 365); document.getElementById("cookie-banner").style.display = "none"; }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const scrollPos = localStorage.getItem('scrollPos');
+            if (scrollPos) {
+                window.scrollTo(0, parseInt(scrollPos));
+                localStorage.removeItem('scrollPos');
             }
         });
-
-        // Actions des boutons
-        function acceptCookies() {
-            setCookie("cookieConsent", "accepted", 365); // Mémorisé pour 1 an
-            document.getElementById("cookie-banner").style.display = "none";
-        }
-
-        function refuseCookies() {
-            setCookie("cookieConsent", "refused", 365); // Mémorisé pour 1 an
-            document.getElementById("cookie-banner").style.display = "none";
-        }
     </script>
-    
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // On vérifie si une position de scroll a été enregistrée
-        const scrollPos = localStorage.getItem('scrollPos');
-        if (scrollPos) {
-            // On remet la page exactement là où elle était
-            window.scrollTo(0, parseInt(scrollPos));
-            // On vide le stockage pour ne pas que ça reste au prochain chargement manuel
-            localStorage.removeItem('scrollPos');
-        }
-    });
-</script>
-
 </body>
 </html>

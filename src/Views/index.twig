@@ -60,6 +60,11 @@
                                 <h5 style="color: #38bdf8; margin-bottom: 10px; font-weight: normal;">{{ offre.entreprise_nom }}</h5>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                     <span class="badge">📍 {{ offre.ville }}</span>
+                                    
+                                    {% if offre.niveau_requis %}
+                                        <span class="badge" style="background: rgba(255,255,255,0.05);">🎓 {{ offre.niveau_requis }}</span>
+                                    {% endif %}
+
                                     {% if offre.duree %}
                                         <span class="badge" style="background: rgba(255,255,255,0.05);">⏱️
                                             {% if offre.duree >= 12 %}
@@ -73,12 +78,15 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            {% if session.id_user is defined and session.role == 3 %}
                             <a href="/wishlist/toggle?id={{ offre.id }}" 
                             class="wishlist-btn" 
                             onclick="localStorage.setItem('scrollPos', window.scrollY);"
                             style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.3)' }}; text-decoration: none; font-size: 1.5rem;">
                             {{ offre.id in wishlist ? '❤️' : '🤍' }}
-                            </a>                        </div>
+                            </a>    
+                            {% endif %}                    
+                        </div>
                         <p class="texte-offre" style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; flex-grow: 1;">
                             {{ offre.description|length > 150 ? offre.description|slice(0, 150) ~ '...' : offre.description }}
                         </p>
@@ -108,4 +116,4 @@
         </aside>
     </div>
 </div>
-{% endblock %}
+{% endblock %}  

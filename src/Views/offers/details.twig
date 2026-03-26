@@ -4,8 +4,16 @@
 {% block content %}
 <div class="container" style="max-width: 800px; margin-top: 40px; margin-bottom: 60px;">
     <div class="card" style="padding: 40px; position: relative; border-top: 5px solid #38bdf8;">
+        
         {% if session.role in [1, 2] %}
-            <a href="/admin/offres/modifier/{{ offre.id }}" class="btn-simple" style="position: absolute; top: 20px; right: 20px;">✏️ Modifier</a>
+            <div style="position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;">
+                <button onclick="toggleStats()" title="Statistiques de l'offre" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 8px; padding: 10px; font-size: 1.2rem; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.2)'" onmouseout="this.style.background='rgba(56, 189, 248, 0.1)'">
+                    📊
+                </button>
+                <a href="/admin/offres/modifier/{{ offre.id }}" title="Modifier l'offre" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; border-radius: 8px; padding: 10px; font-size: 1.2rem; text-decoration: none; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'">
+                    ✏️
+                </a>
+            </div>
         {% endif %}
 
         <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
@@ -15,6 +23,13 @@
             <div>
                 <h1 style="color: #38bdf8; margin: 0; font-size: 2rem;">{{ offre.titre }}</h1>
                 <h2 style="color: #cbd5e1; margin: 0; font-size: 1.2rem; font-weight: 500;">🏢 Proposé par : {{ offre.entreprise_nom }}</h2>
+                {% if offre.nb_avis > 0 %}
+                    <div style="color: #facc15; font-size: 1rem; margin-top: 5px; font-weight: bold;">
+                        ⭐ {{ offre.moyenne_avis }} / 5 <span style="color: #64748b; font-size: 0.85rem; font-weight: normal;">({{ offre.nb_avis }} avis)</span>
+                    </div>
+                {% else %}
+                    <div style="color: #64748b; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Aucun avis sur cette entreprise</div>
+                {% endif %}
             </div>
         </div>
 
@@ -32,6 +47,11 @@
                 {% endif %}
             </span>
             {% endif %}
+            {% if offre.niveau_requis %}
+                <span class="badge" style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    🎓 Profil visé : {{ offre.niveau_requis }}
+                </span>
+            {% endif %}
             <span class="badge" style="color: #38bdf8; border-color: #38bdf8;">👥 {{ offre.nb_candidatures }} postulants</span>
         </div>
 
@@ -43,9 +63,76 @@
             <p style="color: #cbd5e1; line-height: 1.6;">{{ offre.entreprise_desc|default('Aucune description fournie.') }}</p>
         </div>
         
+        {% if session.role is not defined or session.role == 3 %}
         <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
             <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.3rem; padding: 15px 50px; border-radius: 30px;">POSTULER À CETTE OFFRE</a>
         </div>
+        {% endif %}
+
+        {% if session.role in [1, 2] %}
+        <div class="card" style="margin-top: 40px; border-top: 3px solid #facc15; background: rgba(250, 204, 21, 0.05);">
+            <h3 style="color: #facc15; margin-bottom: 15px;">⭐ Évaluer l'accueil de cette entreprise</h3>
+            <form action="/entreprise/evaluer" method="POST" class="formulaire">
+                <input type="hidden" name="id_entreprise" value="{{ offre.id_entreprise }}">
+                <div class="ligne-champ">
+                    <label>Note sur 5 :</label>
+                    <select name="note" required style="width: auto;">
+                        <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+                        <option value="4">⭐⭐⭐⭐ (Très bien)</option>
+                        <option value="3">⭐⭐⭐ (Bien)</option>
+                        <option value="2">⭐⭐ (Moyen)</option>
+                        <option value="1">⭐ (À éviter)</option>
+                    </select>
+                </div>
+                <div class="ligne-champ">
+                    <label>Commentaire (Optionnel) :</label>
+                    <textarea name="commentaire" rows="3" placeholder="Votre avis sur cette entreprise..."></textarea>
+                </div>
+                <button type="submit" class="btn-appliquer" style="background: #facc15; color: #000; margin-top: 10px;">Enregistrer l'avis</button>
+            </form>
+        </div>
+        {% endif %}
+
     </div>
 </div>
+
+{% if session.role in [1, 2] %}
+<div id="modal-stats" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#0f172a; border:2px solid #38bdf8; padding:30px; border-radius:20px; z-index:3000; box-shadow:0 0 50px rgba(0,0,0,0.8); min-width:350px; max-width: 500px; max-height: 80vh; overflow-y: auto;">
+    <h3 style="color:#38bdf8; margin-bottom:15px; border-bottom: 1px solid rgba(56,189,248,0.3); padding-bottom: 10px;">📊 Statistiques de l'offre</h3>
+    
+    <ul style="list-style:none; padding:0; color:#cbd5e1; margin-bottom: 20px;">
+        <li style="margin-bottom:10px;">👤 Nombre de postulants : <strong style="color: #38bdf8;">{{ offre.nb_candidatures }}</strong></li>
+    </ul>
+
+    <h4 style="color:#facc15; margin-bottom:15px; border-bottom: 1px solid rgba(250,204,21,0.3); padding-bottom: 10px;">⭐ Avis sur l'entreprise</h4>
+    
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        {% for eval in evaluations %}
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border-left: 3px solid #facc15;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #facc15; letter-spacing: 2px;">
+                        {% for i in 1..5 %}{{ i <= eval.note ? '★' : '☆' }}{% endfor %}
+                    </span>
+                    <span style="color: #64748b; font-size: 0.8rem;">Le {{ eval.date_eval }}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px;">Par {{ eval.prenom }} {{ eval.nom|first }}. ({{ eval.id_role == 1 ? 'Admin' : 'Pilote' }})</div>
+                {% if eval.commentaire %}
+                    <p style="color: #e9eef7; font-size: 0.95rem; margin: 0; font-style: italic;">"{{ eval.commentaire }}"</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="color: #64748b; font-style: italic; text-align: center; padding: 10px;">Aucune évaluation pour le moment.</div>
+        {% endfor %}
+    </div>
+
+    <button onclick="toggleStats()" class="btn-simple" style="width:100%; border-color: #38bdf8; color: #38bdf8;">Fermer</button>
+</div>
+<script>
+    function toggleStats() {
+        const m = document.getElementById('modal-stats');
+        m.style.display = (m.style.display === 'none') ? 'block' : 'none';
+    }
+</script>
+{% endif %}
+
 {% endblock %}

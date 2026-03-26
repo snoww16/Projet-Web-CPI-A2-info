@@ -1,33 +1,57 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     
-    // --- 1. Gestion du Menu Burger ---
+    // --- MENU BURGER (Navigation Mobile) ---
     const burgerBtn = document.getElementById('burger-btn');
     const navMenu = document.getElementById('nav-menu');
-    if(burgerBtn && navMenu) {
-        burgerBtn.addEventListener('click', () => {
+
+    if (burgerBtn && navMenu) {
+        burgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Empêche le clic de fermer immédiatement le menu
             navMenu.classList.toggle('active');
         });
     }
 
-    // --- 2. Gestion du Menu de Filtres (Mobile) ---
+    // Fermer le menu si on clique ailleurs sur la page
+    document.addEventListener('click', function(e) {
+        if (navMenu && navMenu.classList.contains('active')) {
+            if (!navMenu.contains(e.target) && e.target !== burgerBtn) {
+                navMenu.classList.remove('active');
+            }
+        }
+    });
+
+    // --- FILTRES DE RECHERCHE (Mobile) ---
     const btnToggleFiltres = document.getElementById('btn-toggle-filtres');
     const btnCloseFiltres = document.getElementById('btn-close-filtres');
     const zoneFiltres = document.getElementById('zone-filtres');
 
-    // Ouvrir les filtres
-    if(btnToggleFiltres && zoneFiltres) {
-        btnToggleFiltres.addEventListener('click', () => {
+    if (btnToggleFiltres && zoneFiltres) {
+        btnToggleFiltres.addEventListener('click', function() {
+            zoneFiltres.style.display = 'block';
             zoneFiltres.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Empêche le fond de scroller
         });
     }
 
-    // Fermer les filtres
-    if(btnCloseFiltres && zoneFiltres) {
-        btnCloseFiltres.addEventListener('click', (e) => {
-            e.preventDefault(); // Empêche le bouton de recharger la page
+    if (btnCloseFiltres && zoneFiltres) {
+        btnCloseFiltres.addEventListener('click', function() {
+            zoneFiltres.style.display = 'none';
             zoneFiltres.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Réactive le scroll
         });
     }
 });
+
+// --- CHANGEMENT DE COULEUR DES BOUTONS DE FICHIER (Page Postuler) ---
+function updateFileLabel(inputElement) {
+    const label = inputElement.previousElementSibling;
+    
+    if (inputElement.files && inputElement.files.length > 0) {
+        const fileName = inputElement.files[0].name;
+        label.style.background = '#475569'; 
+        label.style.color = '#f8fafc';
+        label.innerHTML = '📄 ' + fileName;
+    } else {
+        label.style.background = '#38bdf8';
+        label.style.color = '#0f172a';
+        label.innerHTML = '📁 Parcourir...';
+    }
+}

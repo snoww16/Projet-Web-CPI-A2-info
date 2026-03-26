@@ -1,77 +1,69 @@
 {% extends 'layout.twig' %}
-{% block title %}Postuler - {{ offre.titre }}{% endblock %}
+{% block title %}Postuler à {{ offre.titre }}{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin-top: 40px; margin-bottom: 60px;">
+<div class="container" style="max-width: 700px; padding: 40px 20px;">
     
     <div class="card" style="padding: 40px; border-top: 5px solid #38bdf8;">
-        
-        <div style="text-align: center; margin-bottom: 40px;">
-            <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Candidature</h1>
-            <h2 style="color: #38bdf8; font-size: 1.4rem; margin-bottom: 5px;">{{ offre.titre }}</h2>
-            <p style="color: #94a3b8; font-size: 1.1rem;">Chez {{ offre.entreprise_nom }}</p>
-        </div>
+        <h1 style="color: #fff; margin-bottom: 10px; text-align: center;">Candidature</h1>
+        <h2 style="color: #cbd5e1; font-size: 1.2rem; text-align: center; margin-bottom: 30px; font-weight: normal;">
+            Poste : <strong style="color: #38bdf8;">{{ offre.titre }}</strong> chez {{ offre.entreprise_nom }}
+        </h2>
 
-        {% if succes %}
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 10px;">Candidature transmise</h3>
-                <p>Votre candidature a bien été envoyée à l'entreprise. Vous pouvez suivre son avancement dans votre espace personnel.</p>
+        {% if erreur %}
+            <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; color: #fca5a5; margin-bottom: 25px; border-radius: 4px;">
+                ⚠️ {{ erreur }}
             </div>
-            <div style="text-align: center;">
-                <a href="/offres" class="btn-simple">Retour aux offres</a>
-            </div>
-        
-        {% elseif deja_postule %}
-            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; color: #f59e0b; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 10px;">Candidature déjà effectuée</h3>
-                <p>Votre profil est déjà en cours d'étude pour ce poste.</p>
-            </div>
-            <div style="text-align: center;">
-                <a href="/offre/{{ offre.id }}" class="btn-simple">Retour à l'offre</a>
-            </div>
-
-        {% else %}
-            
-            {% if erreur %}
-                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                    Erreur : {{ erreur }}
-                </div>
-            {% endif %}
-
-            <form action="/postuler/{{ offre.id }}" method="post" enctype="multipart/form-data" class="formulaire">
-                
-                <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                    <label style="display: block; font-weight: 500; margin-bottom: 15px; color: #e9eef7;">Curriculum Vitae (Format PDF requis) *</label>
-                    
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <input type="file" id="cv" name="cv" accept=".pdf" required style="display: none;" onchange="document.getElementById('cv-filename').textContent = this.files[0] ? this.files[0].name : 'Aucun fichier sélectionné'">
-                        <label for="cv" class="btn-simple" style="cursor: pointer; margin: 0; padding: 10px 20px;">Parcourir...</label>
-                        <span id="cv-filename" style="color: #94a3b8; font-size: 0.95rem; font-style: italic;">Aucun fichier sélectionné</span>
-                    </div>
-                </div>
-
-                <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                    <label style="display: block; font-weight: 500; margin-bottom: 15px; color: #e9eef7;">Lettre de motivation (Format PDF requis) *</label>
-                    
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <input type="file" id="lm" name="lm" accept=".pdf" required style="display: none;" onchange="document.getElementById('lm-filename').textContent = this.files[0] ? this.files[0].name : 'Aucun fichier sélectionné'">
-                        <label for="lm" class="btn-simple" style="cursor: pointer; margin: 0; padding: 10px 20px;">Parcourir...</label>
-                        <span id="lm-filename" style="color: #94a3b8; font-size: 0.95rem; font-style: italic;">Aucun fichier sélectionné</span>
-                    </div>
-                </div>
-
-                <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1);">
-                    <label for="message" style="display: block; font-weight: 500; margin-bottom: 15px; color: #e9eef7;">Message pour le recruteur (Facultatif)</label>
-                    <textarea id="message" name="message" rows="5" placeholder="Bonjour, je vous contacte pour..." style="width: 100%; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #cbd5e1; resize: vertical; font-family: inherit;"></textarea>
-                </div>
-
-                <div style="text-align: right; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
-                    <button type="submit" class="btn-appliquer" style="font-size: 1.1rem; padding: 12px 30px;">Soumettre ma candidature</button>
-                </div>
-            </form>
-
         {% endif %}
 
+        {% if succes or deja_postule %}
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 4rem; margin-bottom: 10px;">✅</div>
+                <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 15px;">
+                    {{ succes ? 'Candidature envoyée avec succès !' : 'Vous avez déjà postulé à cette offre.' }}
+                </h3>
+                <p style="color: #cbd5e1; margin-bottom: 30px;">Votre profil sera bientôt étudié par l'entreprise.</p>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/offre/{{ offre.id }}" class="btn-simple">Voir l'offre</a>
+                    <a href="{{ session.last_search_url|default('/offres') }}" class="btn-simple secondary" style="background: transparent; border: 1px solid #38bdf8; color: #38bdf8;">Retour à la recherche</a>
+                </div>
+            </div>
+        {% else %}
+            
+            <form action="/postuler/{{ offre.id }}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 25px;">
+                
+                <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <label style="display: block; color: #fff; margin-bottom: 15px; font-weight: bold;">Curriculum Vitae (PDF) <span style="color: #ef4444;">*</span></label>
+                    <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">
+                        <label class="custom-file-btn" for="cv" style="background: #38bdf8; color: #0f172a; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; text-align: center; transition: 0.3s; width: 100%; box-sizing: border-box;">
+                            📁 Sélectionner un CV...
+                        </label>
+                        <input type="file" id="cv" name="cv" accept=".pdf" required style="position: absolute; left: -9999px;" onchange="updateFileLabel(this)">
+                    </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <label style="display: block; color: #fff; margin-bottom: 15px; font-weight: bold;">Lettre de motivation (PDF) <span style="color: #ef4444;">*</span></label>
+                    <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">
+                        <label class="custom-file-btn" for="lm" style="background: #38bdf8; color: #0f172a; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; text-align: center; transition: 0.3s; width: 100%; box-sizing: border-box;">
+                            📁 Sélectionner une lettre...
+                        </label>
+                        <input type="file" id="lm" name="lm" accept=".pdf" required style="position: absolute; left: -9999px;" onchange="updateFileLabel(this)">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="message" style="display: block; color: #fff; margin-bottom: 10px; font-weight: bold;">Petit mot d'accompagnement (Optionnel)</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Bonjour, je suis très intéressé(e) par..." style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 10px; flex-wrap: wrap;">
+                    <a href="{{ session.last_search_url|default('/offres') }}" class="btn-simple secondary">Annuler</a>
+                    <button type="submit" class="btn-appliquer" style="padding: 12px 30px;">Envoyer ma candidature</button>
+                </div>
+            </form>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

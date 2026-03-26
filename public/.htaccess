@@ -1,6 +1,9 @@
 RewriteEngine On
-# Si le fichier ou le dossier demandé n'existe pas physiquement...
+
+# Si le fichier existe physiquement (ex: le CSS, le JS, les images), on le laisse passer
 RewriteCond %{REQUEST_FILENAME} !-f
+# Si c'est un vrai dossier, on le laisse passer
 RewriteCond %{REQUEST_FILENAME} !-d
-# ... alors on envoie tout à index.php
-RewriteRule ^ index.php [QSA,L]
+
+# Sinon (ex: /offres, /profil), on envoie vers le routeur index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
