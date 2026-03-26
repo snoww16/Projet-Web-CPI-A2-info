@@ -31,19 +31,23 @@ class AdminController extends Controller {
         foreach ($filters as $key => $value) { if ($key !== 'page' && !empty($value)) { $queryString .= '&' . urlencode($key) . '=' . urlencode($value); } }
 
         $adminModel = new AdminModel();
-        $donnees = []; $totalItems = 0; $villes = [];
+        $donnees = []; $totalItems = 0; $villes = []; $pilotes = [];
 
-        if ($type === 'etudiants') { $donnees = $adminModel->getUtilisateursByRoleFiltered(3, $filters, $limit, $offset); $totalItems = $adminModel->countUtilisateursByRoleFiltered(3, $filters); } 
+        if ($type === 'etudiants') { 
+            $donnees = $adminModel->getUtilisateursByRoleFiltered(3, $filters, $limit, $offset); 
+            $totalItems = $adminModel->countUtilisateursByRoleFiltered(3, $filters); 
+            $pilotes = $adminModel->getPilotes(); // On charge les pilotes pour la liste déroulante !
+        } 
         elseif ($type === 'pilotes') { $donnees = $adminModel->getUtilisateursByRoleFiltered(2, $filters, $limit, $offset); $totalItems = $adminModel->countUtilisateursByRoleFiltered(2, $filters); } 
         elseif ($type === 'entreprises') { $donnees = $adminModel->getEntreprises($limit, $offset); $totalItems = $adminModel->countEntreprises(); } 
         elseif ($type === 'offres') { 
-            $offerModel = new \App\Models\OfferModel(); 
+            $offerModel = new OfferModel(); 
             $donnees = $offerModel->searchOffers($filters, $limit, $offset); 
             $totalItems = $offerModel->countOffers($filters); 
             $villes = $offerModel->getVilles();
         }
 
-        $this->render('admin/liste.twig', ['type' => $type, 'items' => $donnees, 'queryParams' => $filters, 'currentPage' => $page, 'totalPages' => ceil($totalItems / $limit), 'domaines' => $this->domaines, 'niveaux' => $this->niveaux, 'villes' => $villes, 'queryString' => $queryString]);
+        $this->render('admin/liste.twig', ['type' => $type, 'items' => $donnees, 'queryParams' => $filters, 'currentPage' => $page, 'totalPages' => ceil($totalItems / $limit), 'domaines' => $this->domaines, 'niveaux' => $this->niveaux, 'villes' => $villes, 'pilotes' => $pilotes, 'queryString' => $queryString]);
     }
 
     public function creer($type) {
@@ -53,13 +57,19 @@ class AdminController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($type === 'entreprises') { $adminModel->creerEntreprise($_POST['nom'], $_POST['description'], $_POST['email'], $_POST['telephone']); } 
             elseif ($type === 'offres') { $adminModel->creerOffre($_POST['titre'], $_POST['description'], $_POST['remuneration'], $_POST['date_debut'], $_POST['entreprise'], $_POST['ville'], $_POST['duree'], $_POST['type_contrat'], $_POST['domaine'], $_POST['niveau_requis']); } 
-            elseif ($type === 'etudiants') { $adminModel->creerUtilisateur($_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['password'], 3); } 
+            elseif ($type === 'etudiants') { 
+                // MAGIE ICI : Assigne le pilote automatiquement si connecté, sinon prend celui du menu déroulant (Admin)
+                $id_pilote = ($_SESSION['role'] == 2) ? $_SESSION['id_user'] : $_POST['id_pilote'];
+                $adminModel->creerUtilisateur($_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['password'], 3, $id_pilote); 
+            } 
             elseif ($type === 'pilotes') { $adminModel->creerUtilisateur($_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['password'], 2); }
             header("Location: /admin/" . $type); exit;
         }
 
         $entreprises = ($type === 'offres') ? $adminModel->getEntreprises(1000, 0) : [];
-        $this->render('admin/creer.twig', ['type' => $type, 'entreprises' => $entreprises, 'domaines' => $this->domaines, 'niveaux' => $this->niveaux]);
+        $pilotes = ($type === 'etudiants') ? $adminModel->getPilotes() : [];
+        
+        $this->render('admin/creer.twig', ['type' => $type, 'entreprises' => $entreprises, 'pilotes' => $pilotes, 'domaines' => $this->domaines, 'niveaux' => $this->niveaux]);
     }
 
     public function modifier($type, $id) {
@@ -70,13 +80,21 @@ class AdminController extends Controller {
             if ($type === 'offres') {
                 $adminModel->modifierOffre($id, $_POST['titre'], $_POST['description'], $_POST['remuneration'], $_POST['date_debut'], $_POST['entreprise'], $_POST['ville'], $_POST['duree'], $_POST['type_contrat'], $_POST['domaine'], $_POST['niveau_requis']);
                 header("Location: /offre/" . $id); exit;
+            } elseif ($type === 'etudiants') {
+                $id_pilote = ($_SESSION['role'] == 2) ? $_SESSION['id_user'] : $_POST['id_pilote'];
+                $adminModel->modifierUtilisateur($id, $_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['password'], $id_pilote);
             }
             header("Location: /admin/" . $type); exit;
         }
 
-        $donnees = ($type === 'offres') ? (new OfferModel())->getOfferById($id) : null;
+        $donnees = null;
+        if ($type === 'offres') { $donnees = (new OfferModel())->getOfferById($id); }
+        if ($type === 'etudiants' || $type === 'pilotes') { $donnees = $adminModel->getUtilisateurById($id); }
+
         $entreprises = ($type === 'offres') ? $adminModel->getEntreprises(1000, 0) : [];
-        $this->render('admin/creer.twig', ['type' => $type, 'donnees' => $donnees, 'entreprises' => $entreprises, 'domaines' => $this->domaines, 'niveaux' => $this->niveaux, 'is_edit' => true]);
+        $pilotes = ($type === 'etudiants') ? $adminModel->getPilotes() : [];
+        
+        $this->render('admin/creer.twig', ['type' => $type, 'donnees' => $donnees, 'entreprises' => $entreprises, 'pilotes' => $pilotes, 'domaines' => $this->domaines, 'niveaux' => $this->niveaux, 'is_edit' => true]);
     }
 
     public function supprimer($type, $id) {

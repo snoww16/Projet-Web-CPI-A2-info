@@ -12,6 +12,24 @@
             
             {# ================= UTILISATEURS ================= #}
             {% if type in ['etudiants', 'pilotes'] %}
+                
+                {% if type == 'etudiants' %}
+                    <div class="ligne-champ" style="background: rgba(56, 189, 248, 0.05); padding: 15px; border-radius: 10px; border-left: 4px solid #38bdf8; margin-bottom: 20px;">
+                        <label style="color: #38bdf8;">👨‍🏫 Pilote référent</label>
+                        {% if session.role == 2 %}
+                            <input type="text" value="Vous-même ({{ session.prenom }} {{ session.nom }})" disabled style="background: rgba(255,255,255,0.05);">
+                            <input type="hidden" name="id_pilote" value="{{ session.id_user }}">
+                        {% else %}
+                            <select name="id_pilote" required>
+                                <option value="">Sélectionner un pilote...</option>
+                                {% for pil in pilotes %}
+                                    <option value="{{ pil.id_user }}" {% if donnees.id_pilote|default('') == pil.id_user %}selected{% endif %}>{{ pil.prenom }} {{ pil.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
                 <div class="ligne-champ">
                     <label>Nom</label>
                     <input type="text" name="nom" value="{{ donnees.nom|default('') }}" required>
@@ -42,7 +60,7 @@
                 <div class="ligne-champ" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
                         <label>Email de contact</label>
-                        <input type="email" name="email" value="{{ donnees.email_contact|default('') }}" required>
+                        <input type="email" name="email" value="{{ donnees.email_contact|default(donnees.email|default('')) }}" required>
                     </div>
                     <div>
                         <label>Téléphone</label>
@@ -107,7 +125,7 @@
                         <input type="number" name="duree" value="{{ donnees.duree|default('') }}" min="1" required>
                     </div>
                     <div>
-                        <label>Rémunération (€)</label>
+                        <label>Rémunération (€/mois)</label>
                         <input type="number" name="remuneration" value="{{ donnees.remuneration|default('') }}" step="1" placeholder="Ex: 800">
                     </div>
                     <div>

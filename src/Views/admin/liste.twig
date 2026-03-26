@@ -26,6 +26,13 @@
                             <option value="En entretien" {% if queryParams.statut == 'En entretien' %}selected{% endif %}>En entretien</option>
                             <option value="Stage trouvé" {% if queryParams.statut == 'Stage trouvé' %}selected{% endif %}>Stage trouvé</option>
                         </select>
+
+                        <select name="id_pilote" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
+                            <option value="">Tous les pilotes</option>
+                            {% for pil in pilotes %}
+                                <option value="{{ pil.id_user }}" {% if queryParams.id_pilote == pil.id_user %}selected{% endif %}>{{ pil.prenom }} {{ pil.nom }}</option>
+                            {% endfor %}
+                        </select>
                         {% endif %}
                     </div>
                 
