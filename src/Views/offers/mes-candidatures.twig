@@ -1,0 +1,84 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Mes Candidatures - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<section class="entete-page" style="margin-bottom: 40px;">
+    <div class="container">
+        <h2>Mes Candidatures </h2>
+        <p>Retrouvez ici l'historique de toutes les offres auxquelles vous avez postulé.</p>
+    </div>
+</section>
+
+<section class="zone-principale">
+    <div class="container" style="max-width: 900px;">
+        
+        {% if candidatures|length > 0 %}
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                {% for cand in candidatures %}
+                    <article class="offre" style="position: relative; padding: 25px; border-left: 4px solid #10b981; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 15px; border-radius: 0 10px 10px 0;">
+                        
+                        <div class="entete-offre" style="display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; margin-bottom: 5px;">
+                            <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                {% if cand.logo_path %}
+                                    <img src="{{ cand.logo_path }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ cand.entreprise_nom|url_encode }}&background=10b981&color=0F172A&size=64&bold=true" style="width: 100%; height: 100%; display: block;">
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <h4 style="margin: 0 0 3px 0; font-size: 1.3rem;">{{ cand.titre }}</h4>
+                                <div style="color: #cbd5e1; font-weight: 500; font-size: 1rem;">🏢 {{ cand.entreprise_nom }}</div>
+                            </div>
+                            
+                            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
+                                ✔️ Postulé le {{ cand.date_candidature|date("d/m/Y") }}
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <span class="badge" style="background: rgba(255,255,255,0.05);">📍 {{ cand.ville }}</span>
+                            {% if cand.type_contrat %}<span class="badge" style="background: rgba(255,255,255,0.05);">📜 {{ cand.type_contrat }}</span>{% endif %}
+                            {% if cand.duree %}<span class="badge" style="background: rgba(255,255,255,0.05);">⏱️ {{ cand.duree }}</span>{% endif %}
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">👥 {{ cand.nb_candidatures }} postulant{{ cand.nb_candidatures > 1 ? 's' : '' }}</span>
+                        </div>
+
+                        <p class="texte-offre" style="margin: 0; color: #cbd5e1; line-height: 1.5; font-size: 0.95rem;">
+                            {{ cand.description|length > 180 ? cand.description|slice(0, 180) ~ '...' : cand.description }}
+                        </p>
+
+                        <div class="actions-offre" style="margin-top: 10px;">
+                            <a class="btn-simple" style="padding: 8px 18px;" href="/offre/{{ cand.id }}">Revoir l'offre</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if totalPages is defined and totalPages > 1 %}
+            <div style="margin-top: 40px; text-align: center;">
+                <p class="hint">Page {{ currentPage }} sur {{ totalPages }}</p>
+            </div>
+            <div class="pagination">
+                <a href="?page=1{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
+                <a href="?page={{ currentPage - 1 }}{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">‹</a>
+                {% for i in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
+                    <a href="?page={{ i }}{{ queryString }}" class="{{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
+                {% endfor %}
+                <a href="?page={{ currentPage + 1 }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">›</a>
+                <a href="?page={{ totalPages }}{{ queryString }}" class="{{ currentPage == totalPages ? 'disabled' : '' }}">»</a>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div class="card" style="padding: 60px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.2);">
+                <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;">📭</div>
+                <h3 style="margin-bottom: 15px; color: #e9eef7;">Aucune candidature envoyée</h3>
+                <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px;">Vous n'avez pas encore postulé à des offres. C'est le moment de lancer votre carrière !</p>
+                <a href="/offres" class="btn-appliquer" style="font-size: 1.1rem; padding: 12px 30px;">Explorer les offres</a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

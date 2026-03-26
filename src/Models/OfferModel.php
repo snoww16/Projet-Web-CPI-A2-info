@@ -35,8 +35,8 @@ class OfferModel extends Model {
             $params['domaine'] = '%' . $filtres['domaine'] . '%';
         }
         if (!empty($filtres['duree'])) {
-            $sql .= " AND o.duree LIKE :duree";
-            $params['duree'] = '%' . $filtres['duree'] . '%';
+            $sql .= " AND o.duree >= :duree"; // On cherche les offres d'au moins X mois
+            $params['duree'] = (int)$filtres['duree'];
         }
 
         $sql .= " GROUP BY o.id_offre ORDER BY o.date_offre DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
@@ -129,5 +129,55 @@ class OfferModel extends Model {
             'lm_path' => $lm_path,
             'message' => $message
         ]);
+    }
+
+    // Récupère toutes les informations des offres mises en favoris par un utilisateur
+    public function getWishlistOffersByUser($userId, $limit = 15, $offset = 0) {
+        $sql = "SELECT o.id_offre AS id, o.titre, o.description, o.ville, o.duree, o.type_contrat, o.remuneration, e.nom AS entreprise_nom, e.logo_path,
+                GROUP_CONCAT(c.nom_competence SEPARATOR ', ') AS competences,
+                (SELECT COUNT(*) FROM Candidature cand WHERE cand.id_offre = o.id_offre) AS nb_candidatures
+                FROM Wishlist w
+                JOIN Offre o ON w.id_offre = o.id_offre
+                JOIN Entreprise e ON o.id_entreprise = e.id_entreprise
+                LEFT JOIN Offre_Competence oc ON o.id_offre = oc.id_offre
+                LEFT JOIN Competence c ON oc.id_competence = c.id_competence
+                WHERE w.id_user = :userId
+                GROUP BY o.id_offre
+                ORDER BY w.id_offre DESC
+                LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function countWishlistOffersByUser($userId) {
+        $sql = "SELECT COUNT(*) FROM Wishlist WHERE id_user = :userId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchColumn();
+    }
+
+    // Récupère l'historique des candidatures d'un utilisateur
+    public function getCandidaturesByUser($userId, $limit = 15, $offset = 0) {
+        $sql = "SELECT c.date_candidature, o.id_offre AS id, o.titre, o.ville, o.type_contrat, o.duree, o.remuneration, o.description, e.nom AS entreprise_nom, e.logo_path,
+                (SELECT COUNT(*) FROM Candidature cand WHERE cand.id_offre = o.id_offre) AS nb_candidatures
+                FROM Candidature c
+                JOIN Offre o ON c.id_offre = o.id_offre
+                JOIN Entreprise e ON o.id_entreprise = e.id_entreprise
+                WHERE c.id_user = :userId
+                ORDER BY c.date_candidature DESC
+                LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function countCandidaturesByUser($userId) {
+        $sql = "SELECT COUNT(*) FROM Candidature WHERE id_user = :userId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchColumn();
     }
 }

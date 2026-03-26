@@ -3,60 +3,48 @@
 
 {% block content %}
 <div class="container" style="max-width: 800px; margin-top: 40px; margin-bottom: 60px;">
-    
     <div class="card" style="padding: 40px; position: relative; border-top: 5px solid #38bdf8;">
-        
-        {% if session is defined and session.role in [1, 2] %}
-            <a href="/admin/offres/modifier/{{ offre.id }}" class="btn-simple" style="position: absolute; top: 20px; right: 20px;" title="Modifier cette offre">✏️ Modifier</a>
+        {% if session.role in [1, 2] %}
+            <a href="/admin/offres/modifier/{{ offre.id }}" class="btn-simple" style="position: absolute; top: 20px; right: 20px;">✏️ Modifier</a>
         {% endif %}
 
         <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
-            <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;">
-                {% if offre.logo_path %}
-                    <img src="{{ offre.logo_path }}" alt="Logo {{ offre.entreprise_nom }}" style="width: 100%; height: 100%; object-fit: cover;">
-                {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ offre.entreprise_nom|url_encode }}&background=38bdf8&color=0F172A&size=128&bold=true" alt="Logo générique" style="width: 100%; height: 100%;">
-                {% endif %}
+            <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                <img src="{{ offre.logo_path|default('https://ui-avatars.com/api/?name=' ~ offre.entreprise_nom|url_encode) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div>
-                <h1 style="color: #38bdf8; margin: 0 0 5px 0; font-size: 2rem;">{{ offre.titre }}</h1>
+                <h1 style="color: #38bdf8; margin: 0; font-size: 2rem;">{{ offre.titre }}</h1>
                 <h2 style="color: #cbd5e1; margin: 0; font-size: 1.2rem; font-weight: 500;">🏢 Proposé par : {{ offre.entreprise_nom }}</h2>
             </div>
         </div>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            {% if offre.ville %}<span class="badge" style="font-size: 0.95rem; padding: 6px 14px; background: rgba(255,255,255,0.05);">📍 {{ offre.ville }}</span>{% endif %}
-            {% if offre.type_contrat %}<span class="badge" style="font-size: 0.95rem; padding: 6px 14px; background: rgba(255,255,255,0.05);">📜 {{ offre.type_contrat }}</span>{% endif %}
-            {% if offre.duree %}<span class="badge" style="font-size: 0.95rem; padding: 6px 14px; background: rgba(255,255,255,0.05);">⏱️ {{ offre.duree }}</span>{% endif %}
-            {% if offre.remuneration %}<span class="badge" style="font-size: 0.95rem; padding: 6px 14px; background: rgba(255,255,255,0.05);">💰 {{ offre.remuneration }} €/mois</span>{% endif %}
-            <span class="badge" style="font-size: 0.95rem; padding: 6px 14px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8;">
-                👥 {{ offre.nb_candidatures }} postulant{{ offre.nb_candidatures > 1 ? 's' : '' }}
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 25px;">
+            <span class="badge">📍 {{ offre.ville }}</span>
+            <span class="badge">📜 {{ offre.type_contrat }}</span>
+            {% if offre.duree %}
+            <span class="badge" style="background: rgba(255,255,255,0.05);">⏱️
+                {% if offre.duree >= 12 %}
+                    {% set annees = (offre.duree / 12)|round(0, 'floor') %}
+                    {% set mois_restants = offre.duree % 12 %}
+                    {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
+                {% else %}
+                    {{ offre.duree }} mois
+                {% endif %}
             </span>
+            {% endif %}
+            <span class="badge" style="color: #38bdf8; border-color: #38bdf8;">👥 {{ offre.nb_candidatures }} postulants</span>
         </div>
 
-        {% if offre.competences %}
-        <div style="margin-bottom: 30px;">
-            <h3 style="font-size: 1.1rem; color: #e9eef7; margin-bottom: 12px;">Compétences requises :</h3>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                {% for comp in offre.competences|split(', ') %}
-                    <span style="background: transparent; border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold;">
-                        {{ comp }}
-                    </span>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
+        <div class="texte-offre">
+            <h3 style="color: #38bdf8;">Vos Missions</h3>
+            <p style="white-space: pre-line; color: #cbd5e1; line-height: 1.6;">{{ offre.description ?? offre.offre_desc }}</p>
 
-        <div class="texte-offre" style="margin-bottom: 40px;">
-            <h3 style="color: #38bdf8; margin-bottom: 15px; font-size: 1.4rem;">Vos Missions</h3>
-            <p style="white-space: pre-line; color: #cbd5e1; line-height: 1.6; font-size: 1.05rem; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">{{ offre.description ?? offre.offre_desc }}</p>
-
-            <h3 style="color: #38bdf8; margin-top: 35px; margin-bottom: 15px; font-size: 1.4rem;">À propos de {{ offre.entreprise_nom }}</h3>
-            <p style="color: #cbd5e1; line-height: 1.6; font-size: 1.05rem; background: rgba(255,255,255,0.02); padding: 25px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">{{ offre.entreprise_desc ?? 'Aucune description détaillée n\'a été fournie par l\'entreprise.' }}</p>
+            <h3 style="color: #38bdf8; margin-top: 30px;">À propos de {{ offre.entreprise_nom }}</h3>
+            <p style="color: #cbd5e1; line-height: 1.6;">{{ offre.entreprise_desc|default('Aucune description fournie.') }}</p>
         </div>
         
         <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.3rem; padding: 15px 50px; border-radius: 30px; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">POSTULER À CETTE OFFRE</a>
+            <a href="/postuler/{{ offre.id }}" class="btn-appliquer" style="font-size: 1.3rem; padding: 15px 50px; border-radius: 30px;">POSTULER À CETTE OFFRE</a>
         </div>
     </div>
 </div>
