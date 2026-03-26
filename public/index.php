@@ -58,15 +58,6 @@ switch ($path) {
         echo $twig->render('a-propos.twig');
         break;
 
-    // Route générique pour toutes les pages légales du footer
-    case '/mentions-legales':
-    case '/politique-confidentialite':
-    case '/contact':
-        // On récupère le nom de la page depuis l'URL pour faire un titre propre
-        $titre = ucfirst(str_replace(['/', '-'], ['', ' '], $path));
-        echo $twig->render('legal.twig', ['titre_page' => $titre]);
-        break;
-
     case '/offres':
         $offerModel = new OfferModel();
         
@@ -297,6 +288,18 @@ switch ($path) {
             exit;
         }
         echo $twig->render('admin/dashboard.twig');
+        break;
+
+    case '/mentions-legales':
+        echo $twig->render('legal/mentions-legales.twig');
+        break;
+
+    case '/politique-confidentialite':
+        echo $twig->render('legal/confidentialite.twig');
+        break;
+
+    case '/contact':
+        echo $twig->render('legal/contact.twig');
         break;
 
     // --- 1. LISTE DES ENTITÉS ---

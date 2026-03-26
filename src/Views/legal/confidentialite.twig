@@ -1,0 +1,33 @@
+{% extends 'layout.twig' %}
+{% block title %}Confidentialité - CESI Ton Stage{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; padding: 60px 20px; line-height: 1.8;">
+    <div class="card" style="padding: 40px; border-top: 5px solid #10b981;">
+        <h1 style="color: #fff; margin-bottom: 40px; font-size: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+            Protection des Données
+        </h1>
+
+        <p style="font-size: 1.2rem; color: #94a3b8; margin-bottom: 40px;">
+            Conformément au RGPD, nous nous engageons à protéger la vie privée des étudiants et des recruteurs.
+        </p>
+        
+        <div style="display: grid; gap: 30px;">
+            <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <h2 style="color: #10b981; font-size: 1.4rem; margin-bottom: 10px;">Données collectées</h2>
+                <p style="font-size: 1.1rem; color: #cbd5e1;">Nous traitons votre nom, prénom, email, ainsi que les documents nécessaires au recrutement (CV et lettre de motivation).</p>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <h2 style="color: #10b981; font-size: 1.4rem; margin-bottom: 10px;">Finalité du traitement</h2>
+                <p style="font-size: 1.1rem; color: #cbd5e1;">Vos données servent exclusivement à la gestion des candidatures et à la mise en relation avec les entreprises présentes sur la plateforme.</p>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <h2 style="color: #10b981; font-size: 1.4rem; margin-bottom: 10px;">Conservation</h2>
+                <p style="font-size: 1.1rem; color: #cbd5e1;">Les comptes inactifs depuis plus de 2 ans sont automatiquement supprimés. Vous disposez d'un droit d'accès et de suppression via la page contact.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
