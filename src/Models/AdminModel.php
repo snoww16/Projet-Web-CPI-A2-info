@@ -159,4 +159,11 @@ class AdminModel {
         $stmt = $this->db->prepare("DELETE FROM Offre WHERE id_offre = ?");
         return $stmt->execute([$id]);
     }
+    // Dans AdminModel.php
+
+public function getUtilisateurByEmail($email) {
+    $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE email = ?");
+    $stmt->execute([$email]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 }

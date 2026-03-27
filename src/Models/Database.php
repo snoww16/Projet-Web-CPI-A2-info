@@ -13,7 +13,7 @@ class Database {
             // Configuration OVH Cloud
             $host = 'mysql-13320d91-o0640ffa2.database.cloud.ovh.net';
             $port = '20184';
-            $dbname = 'defaultdb';
+            $dbname = 'web4all';
             $user = 'admin.web';
             $pass = 'h4GB0kzLI6txSmqj12PW';
 
