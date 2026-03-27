@@ -26,6 +26,7 @@ switch (true) {
     // --- AUTHENTIFICATION ---
     case $request === '/login': (new \App\Controllers\AuthController())->login(); break;
     case $request === '/logout': (new \App\Controllers\AuthController())->logout(); break;
+    case $request === '/premiere-connexion': (new \App\Controllers\AuthController())->forcePasswordChange(); break;
 
     // --- OFFRES & CANDIDATURES ---
     case $request === '/offres': (new \App\Controllers\OfferController())->index(); break;
