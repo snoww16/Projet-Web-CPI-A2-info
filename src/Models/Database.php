@@ -1,30 +1,33 @@
 <?php
+
 namespace App\Models;
 
 use PDO;
-use PDOException;
+use Exception;
 
 class Database {
     private static $instance = null;
 
-    // Tes vrais identifiants qui marchent
-    private const DB_USER = 'admin.web';
-    private const DB_PASS = 'uFU6rmQ.@zzGyZ1*'; 
-
-    private function __construct() {}
-
-    public static function getConnection(): PDO {
+    public static function getConnection() {
         if (self::$instance === null) {
+            // Configuration OVH Cloud
+            $host = 'mysql-13320d91-o0640ffa2.database.cloud.ovh.net';
+            $port = '20184';
+            $dbname = 'defaultdb';
+            $user = 'admin.web';
+            $pass = 'h4GB0kzLI6txSmqj12PW';
+
             try {
-                // La connexion TCP qui traverse le pare-feu Fedora
-                $dsn = "mysql:host=127.0.0.1;port=3306;dbname=web4all;charset=utf8mb4";
+                $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
                 
-                self::$instance = new PDO($dsn, self::DB_USER, self::DB_PASS, [
+                self::$instance = new PDO($dsn, $user, $pass, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    // Désactivation de la vérification stricte du certificat pour OVH
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false 
                 ]);
-            } catch (PDOException $e) {
+            } catch (Exception $e) {
                 die("Erreur de connexion : " . $e->getMessage());
             }
         }

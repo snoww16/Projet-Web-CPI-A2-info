@@ -1,32 +1,16 @@
 <?php
 namespace App\Models;
+
+use App\Models\Database;
 use PDO;
 
 class AdminModel {
     protected $db;
 
     public function __construct() {
-    $host = 'mysql-13320d91-o0640ffa2.database.cloud.ovh.net';
-    $port = '20184';
-    $dbname = 'web4all';
-    $user = 'admin.web';
-    $pass = 'h4GB0kzLI6txSmqj12PW';
-
-    try {
-        // Connexion avec gestion du SSL obligatoire sur Public Cloud
-        $this->db = new PDO(
-            "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8", 
-            $user, 
-            $pass, 
-            [
-                PDO::MYSQL_ATTR_SSL_CA => true,
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ]
-        );
-    } catch (\PDOException $e) {
-        die("Erreur de connexion à la base de données : " . $e->getMessage());
+        // On récupère la connexion unique configurée dans Database.php
+        $this->db = Database::getConnection();
     }
-}
 
     // ==========================================
     // 1. GESTION DES UTILISATEURS & PILOTES
@@ -38,19 +22,8 @@ class AdminModel {
     }
 
     public function getUtilisateurById($id) {
-        // Version améliorée pour lier le Pilote associé à l'étudiant
-        $sql = "SELECT u.*, p.nom as pilote_nom, p.prenom as pilote_prenom 
-                FROM Utilisateur u 
-                LEFT JOIN Utilisateur p ON u.id_pilote = p.id_user 
-                WHERE u.id_user = ?";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE id_user = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function getUtilisateurByEmail($email) {
-        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE email = ?");
-        $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -124,20 +97,9 @@ class AdminModel {
         return $stmt->execute([$id]);
     }
 
-    public function getStudentsByPilote($id_pilote) {
-        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE id_pilote = ? ORDER BY nom ASC");
-        $stmt->execute([$id_pilote]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function updateStatutRecherche($id_user, $statut) {
         $stmt = $this->db->prepare("UPDATE Utilisateur SET statut_recherche = ? WHERE id_user = ?");
         return $stmt->execute([$statut, $id_user]);
-    }
-
-    public function updateAvatar($id, $path) {
-        $stmt = $this->db->prepare("UPDATE Utilisateur SET photo_path = ? WHERE id_user = ?");
-        return $stmt->execute([$path, $id]);
     }
 
     // ==========================================
@@ -147,12 +109,6 @@ class AdminModel {
     public function getEntreprises($limit = 15, $offset = 0) {
         $sql = "SELECT * FROM Entreprise ORDER BY id_entreprise DESC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getEntrepriseById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM Entreprise WHERE id_entreprise = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function countEntreprises() {
@@ -202,34 +158,5 @@ class AdminModel {
     public function supprimerOffre($id) {
         $stmt = $this->db->prepare("DELETE FROM Offre WHERE id_offre = ?");
         return $stmt->execute([$id]);
-    }
-
-    // ==========================================
-    // 4. SÉCURITÉ ET MOTS DE PASSE
-    // ==========================================
-
-    public function updatePasswordAndFirstLogin($id_user, $hash) {
-        // Gère le changement forcé de mot de passe à la première connexion
-        $stmt = $this->db->prepare("UPDATE Utilisateur SET mot_de_passe = ?, premiere_connexion = 0 WHERE id_user = ?");
-        return $stmt->execute([$hash, $id_user]);
-    }
-
-    public function setPasswordResetToken($email, $token, $expires) {
-        // Enregistre le token de réinitialisation
-        $stmt = $this->db->prepare("UPDATE Utilisateur SET reset_token = ?, reset_expires = ? WHERE email = ?");
-        return $stmt->execute([$token, $expires, $email]);
-    }
-
-    public function getUserByResetToken($token) {
-        // Récupère l'utilisateur si le token est encore valide (date expiration > maintenant)
-        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE reset_token = ? AND reset_expires > NOW()");
-        $stmt->execute([$token]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function resetUserPassword($id_user, $hash) {
-        // Définit le nouveau mot de passe et nettoie les colonnes de réinitialisation
-        $stmt = $this->db->prepare("UPDATE Utilisateur SET mot_de_passe = ?, reset_token = NULL, reset_expires = NULL WHERE id_user = ?");
-        return $stmt->execute([$hash, $id_user]);
     }
 }

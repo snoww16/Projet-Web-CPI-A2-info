@@ -1,6 +1,10 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+
+    # Si le fichier ou le dossier existe (ex: css, img, js), on l'affiche directement
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Sinon, on redirige tout vers notre routeur MVC (index.php)
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>

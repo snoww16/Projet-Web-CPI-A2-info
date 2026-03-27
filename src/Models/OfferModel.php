@@ -55,27 +55,39 @@ class OfferModel extends Model {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function countOffers($filters = []) {
-        // CORRECTION : Requête propre avec des paramètres uniques (q1, q2, q3, q4) pour éviter le bug PDO
-        $sql = "SELECT COUNT(DISTINCT o.id_offre) FROM Offre o JOIN Entreprise e ON o.id_entreprise = e.id_entreprise WHERE 1=1";
+    public function countOffers($filtres = []) {
+        $sql = "SELECT COUNT(*) FROM Offre o JOIN Entreprise e ON o.id_entreprise = e.id_entreprise WHERE 1=1";
         $params = [];
-
-        if (!empty($filters['q'])) {
-            $sql .= " AND (o.titre LIKE :q1 OR o.description LIKE :q2 OR o.ville LIKE :q3 OR e.nom LIKE :q4)";
-            $q = '%' . $filters['q'] . '%';
-            $params['q1'] = $q; $params['q2'] = $q; $params['q3'] = $q; $params['q4'] = $q;
+        
+        if (!empty($filtres['q'])) {
+            $sql .= " AND (o.titre LIKE :q1 OR o.description LIKE :q2 OR e.nom LIKE :q3)";
+            $params['q1'] = '%' . $filtres['q'] . '%';
+            $params['q2'] = '%' . $filtres['q'] . '%';
+            $params['q3'] = '%' . $filtres['q'] . '%';
         }
-        if (!empty($filters['ville'])) { $sql .= " AND o.ville = :ville"; $params['ville'] = $filters['ville']; }
-        if (!empty($filters['type_contrat'])) { $sql .= " AND o.type_contrat = :type"; $params['type'] = $filters['type_contrat']; }
-        if (!empty($filters['domaine'])) { $sql .= " AND o.domaine = :domaine"; $params['domaine'] = $filters['domaine']; }
-        if (!empty($filters['niveau_requis'])) { $sql .= " AND o.niveau_requis = :niveau"; $params['niveau'] = $filters['niveau_requis']; }
-        if (!empty($filters['duree_min']) && !empty($filters['duree_max'])) {
-            $sql .= " AND o.duree BETWEEN :duree_min AND :duree_max";
-            $params['duree_min'] = (int)$filters['duree_min'];
-            $params['duree_max'] = (int)$filters['duree_max'];
+        if (!empty($filtres['ville'])) {
+            $sql .= " AND o.ville = :ville";
+            $params['ville'] = $filtres['ville'];
         }
-        if (!empty($filters['date_debut'])) { $sql .= " AND o.date_debut >= :date_deb"; $params['date_deb'] = $filters['date_debut']; }
-
+        if (!empty($filtres['type_contrat'])) {
+            $sql .= " AND o.type_contrat = :type_contrat";
+            $params['type_contrat'] = $filtres['type_contrat'];
+        }
+        if (!empty($filtres['domaine'])) {
+            $sql .= " AND o.domaine LIKE :domaine";
+            $params['domaine'] = '%' . $filtres['domaine'] . '%';
+        }
+        if (!empty($filtres['duree'])) {
+            $sql .= " AND o.duree >= :duree";
+            $params['duree'] = (int)$filtres['duree'];
+        }
+        
+        // CORRECTION 3 : Même chose ici pour le comptage
+        if (!empty($filtres['niveau_requis'])) {
+            $sql .= " AND o.niveau_requis = :niveau_requis";
+            $params['niveau_requis'] = $filtres['niveau_requis'];
+        }
+        
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchColumn();
@@ -236,15 +248,5 @@ class OfferModel extends Model {
         $sql = "SELECT DISTINCT ville FROM Offre WHERE ville IS NOT NULL AND ville != '' ORDER BY ville ASC";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
-    }
-
-    public function getOffresByEntreprise($id_entreprise, $limit = 5) {
-        // CORRECTION : Ajout de "o.id_offre AS id," pour que la carte trouve l'ID et redirige bien !
-        $sql = "SELECT o.id_offre AS id, o.*, e.nom AS entreprise_nom, e.logo_path 
-                FROM Offre o JOIN Entreprise e ON o.id_entreprise = e.id_entreprise 
-                WHERE o.id_entreprise = ? ORDER BY o.id_offre DESC LIMIT " . (int)$limit;
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id_entreprise]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

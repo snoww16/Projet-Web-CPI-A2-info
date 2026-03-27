@@ -7,26 +7,21 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // =========================================================
-// ROUTEUR MVC
+// ROUTEUR MVC (Le cerveau de l'application)
 // =========================================================
 
 switch (true) {
-    // --- PAGES STATIQUES & ACCUEIL ---
+    // --- PAGES STATIQUES & PROFIL ---
     case $request === '/': (new \App\Controllers\HomeController())->index(); break;
     case $request === '/a-propos': (new \App\Controllers\HomeController())->aPropos(); break;
     case $request === '/mentions-legales': (new \App\Controllers\HomeController())->mentionsLegales(); break;
     case $request === '/politique-confidentialite': (new \App\Controllers\HomeController())->confidentialite(); break;
     case $request === '/contact': (new \App\Controllers\HomeController())->contact(); break;
-
-    // --- PROFILS UTILISATEURS (NOUVEAU) ---
-    case $request === '/profil': (new \App\Controllers\ProfileController())->myProfile(); break;
-    case $request === '/profil/avatar': (new \App\Controllers\ProfileController())->updateAvatar(); break;
-    case (preg_match('/^\/profil\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\ProfileController())->viewProfile($matches[1]); break;
+    case $request === '/profil': (new \App\Controllers\HomeController())->profil(); break;
 
     // --- AUTHENTIFICATION ---
     case $request === '/login': (new \App\Controllers\AuthController())->login(); break;
     case $request === '/logout': (new \App\Controllers\AuthController())->logout(); break;
-    case $request === '/premiere-connexion': (new \App\Controllers\AuthController())->forcePasswordChange(); break;
 
     // --- OFFRES & CANDIDATURES ---
     case $request === '/offres': (new \App\Controllers\OfferController())->index(); break;
@@ -36,9 +31,8 @@ switch (true) {
     case (preg_match('/^\/offre\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\OfferController())->details($matches[1]); break;
     case (preg_match('/^\/postuler\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\OfferController())->postuler($matches[1]); break;
 
-    // --- ENTREPRISES (NOUVEAU ROUTAGE DETAILS) ---
+    // --- ENTREPRISES ---
     case $request === '/entreprises': (new \App\Controllers\EntrepriseController())->index(); break;
-    case (preg_match('/^\/entreprise\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\EntrepriseController())->details($matches[1]); break;
     case $request === '/entreprise/evaluer': (new \App\Controllers\EntrepriseController())->evaluer(); break;
 
     // --- ADMINISTRATION ---

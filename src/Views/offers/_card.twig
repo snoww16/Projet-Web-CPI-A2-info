@@ -28,8 +28,8 @@
         {% if session.id_user is defined and session.role == 3 %}
             <a href="/wishlist/toggle?id={{ offre.id }}" 
             class="wishlist-btn" 
-            onclick="toggleWishlistAjax(event, this, {{ offre.id }});"
-            style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.2)' }}; font-size: 1.5rem; text-decoration: none; transition: 0.2s; display: inline-block;" 
+            onclick="localStorage.setItem('scrollPos', window.scrollY);"
+            style="color: {{ offre.id in wishlist ? '#ff6b6b' : 'rgba(255, 255, 255, 0.2)' }}; font-size: 1.5rem; text-decoration: none; transition: 0.2s;" 
             title="Ajouter aux favoris">
                 {% if offre.id in wishlist %}❤️{% else %}🤍{% endif %}
             </a>
