@@ -11,17 +11,23 @@ $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // =========================================================
 
 switch (true) {
-    // --- PAGES STATIQUES & PROFIL ---
+    // --- STATIQUES & PROFIL ---
     case $request === '/': (new \App\Controllers\HomeController())->index(); break;
     case $request === '/a-propos': (new \App\Controllers\HomeController())->aPropos(); break;
     case $request === '/mentions-legales': (new \App\Controllers\HomeController())->mentionsLegales(); break;
     case $request === '/politique-confidentialite': (new \App\Controllers\HomeController())->confidentialite(); break;
     case $request === '/contact': (new \App\Controllers\HomeController())->contact(); break;
-    case $request === '/profil': (new \App\Controllers\HomeController())->profil(); break;
+    case $request === '/profil/avatar': (new \App\Controllers\HomeController())->updateAvatar(); break;
 
+    // 👇 LA CORRECTION EST ICI : Deux routes pour le profil
+    case $request === '/profil': (new \App\Controllers\HomeController())->profil(); break;
+    case (preg_match('/^\/profil\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\HomeController())->profil($matches[1]); break;
     // --- AUTHENTIFICATION ---
     case $request === '/login': (new \App\Controllers\AuthController())->login(); break;
     case $request === '/logout': (new \App\Controllers\AuthController())->logout(); break;
+    case $request === '/premiere-connexion': (new \App\Controllers\AuthController())->firstLogin(); break; // Ta page de 1ère connexion
+    case $request === '/forgot-password': (new \App\Controllers\AuthController())->forgotPassword(); break; // La nouvelle page
+    case $request === '/reset-password': (new \App\Controllers\AuthController())->resetPassword(); break;
 
     // --- OFFRES & CANDIDATURES ---
     case $request === '/offres': (new \App\Controllers\OfferController())->index(); break;
@@ -34,6 +40,7 @@ switch (true) {
     // --- ENTREPRISES ---
     case $request === '/entreprises': (new \App\Controllers\EntrepriseController())->index(); break;
     case $request === '/entreprise/evaluer': (new \App\Controllers\EntrepriseController())->evaluer(); break;
+    case (preg_match('/^\/entreprise\/([0-9]+)$/', $request, $matches) ? true : false): (new \App\Controllers\EntrepriseController())->details($matches[1]); break;
 
     // --- ADMINISTRATION ---
     case $request === '/admin': (new \App\Controllers\AdminController())->dashboard(); break;

@@ -52,11 +52,6 @@
                                 <a href="/mes-favoris">Ma Wishlist</a>
                             {% endif %}
 
-                            {# UNIQUEMENT POUR LES ADMINS ET PILOTES (Rôles 1 et 2) #}
-                            {% if session.role in [1, 2] %}
-                                <a href="/admin" style="color: #10b981;">⚙️ Administration</a>
-                            {% endif %}
-
                             <div class="dropdown-divider"></div>
                             <hr class="sep">
                             <a href="/logout" style="color: #ff6b6b; font-weight: bold;">Se déconnecter</a>
@@ -149,5 +144,45 @@
             }
         });
     </script>
+
+    <script>
+    function toggleWishlistAjax(event, btn, offreId) {
+        // 1. On empêche la page de se recharger brusquement
+        event.preventDefault(); 
+        
+        let icon = btn.innerText.trim();
+        let isHearted = (icon === '❤️');
+        
+        // 2. On change le visuel instantanément (La carte reste à l'écran !)
+        if (isHearted) {
+            btn.innerText = '🤍';
+            btn.style.color = 'rgba(255, 255, 255, 0.2)';
+        } else {
+            btn.innerText = '❤️';
+            btn.style.color = '#ff6b6b';
+        }
+
+        // 3. On envoie l'ordre à la base de données en arrière-plan (silencieusement)
+        fetch('/wishlist/toggle?id=' + offreId, {
+            method: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        });
+    }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('click', function(event) {
+        // Sélectionne toutes les pop-ups qui ont la classe 'modal'
+        let modals = document.querySelectorAll('.modal'); 
+        modals.forEach(function(modal) {
+            // Si le clic se fait exactement sur le fond sombre (et pas sur le texte)
+            if (event.target === modal) {
+                modal.style.display = "none"; 
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

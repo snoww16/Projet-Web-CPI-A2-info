@@ -133,6 +133,20 @@
         m.style.display = (m.style.display === 'none') ? 'block' : 'none';
     }
 </script>
+<script>
+    // Écouteur d'événement sur toute la fenêtre
+    window.addEventListener('click', function(event) {
+        // Sélectionne la ou les modales (assure-toi que la classe est bien '.modal')
+        let modals = document.querySelectorAll('.modal'); 
+        
+        modals.forEach(function(modal) {
+            // Si l'utilisateur clique sur le fond sombre de la modale (et pas sur la carte blanche au milieu)
+            if (event.target === modal) {
+                modal.style.display = "none"; // On cache la pop-up
+            }
+        });
+    });
+</script>
 {% endif %}
 
 {% endblock %}

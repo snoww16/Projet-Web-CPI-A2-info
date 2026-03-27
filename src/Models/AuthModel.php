@@ -42,4 +42,25 @@ class AuthModel extends Model {
             'mdp' => $password
         ]);
     }
+
+    // Dans AuthController.php
+public function forcePasswordChange() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $pwd1 = $_POST['new_password'];
+        $pwd2 = $_POST['confirm_password'];
+
+        // C'est ICI qu'on vérifie la correspondance exacte
+        if ($pwd1 !== $pwd2) {
+            return $this->render('auth/first_login.twig', [
+                'error' => 'Les deux mots de passe ne sont pas identiques (vérifiez les majuscules).'
+            ]);
+        }
+
+        // Si c'est bon, on appelle le modèle
+        $adminModel = new \App\Models\AdminModel();
+        $adminModel->updatePasswordAndFirstLogin($_SESSION['id_user'], $pwd1);
+        header('Location: /'); exit;
+    }
+    $this->render('auth/first_login.twig');
+}
 }

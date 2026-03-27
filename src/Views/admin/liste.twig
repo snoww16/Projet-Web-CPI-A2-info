@@ -3,15 +3,25 @@
 
 {% block content %}
 <section class="entete-page">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Gestion des {{ type|capitalize }}</h2>
-        <a href="/admin/{{ type }}/creer" class="btn-appliquer">+ Créer {{ type == 'entreprises' ? 'une' : 'un' }} {{ type|slice(0, -1) }}</a>
+    <div class="container">
+        {# LE BOUTON RETOUR BIEN PLACÉ #}
+        <div style="margin-bottom: 20px; text-align: left;">
+            <a href="/profil" class="btn-simple" style="text-decoration: none; display: inline-block; padding: 8px 15px; background: rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                ⬅ Retour au profil
+            </a>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin:0;">Gestion des {{ type|capitalize }}</h2>
+            <a href="/admin/{{ type }}/creer" class="btn-appliquer" style="margin:0;">+ Créer {{ type == 'entreprises' ? 'une' : 'un' }} {{ type|slice(0, -1) }}</a>
+        </div>
     </div>
 </section>
 
 <section class="zone-principale">
     <div class="container" style="max-width: 1000px;">
         
+        {# --- BARRE DE RECHERCHE --- #}
         <div class="card" style="margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.02);">
             <form method="GET" style="display: flex; flex-direction: column; gap: 15px;">
                 
@@ -37,6 +47,7 @@
                     </div>
                 
                 {% elseif type == 'offres' %}
+                    {# Garde tes filtres d'offres intacts ici #}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <input type="text" name="q" placeholder="Mots-clés (titre, desc...)" value="{{ queryParams.q|default('') }}" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;">
                         
@@ -59,26 +70,6 @@
                                 <option value="{{ dom }}" {% if queryParams.domaine == dom %}selected{% endif %}>{{ dom }}</option>
                             {% endfor %}
                         </select>
-
-                        <select name="niveau_requis" style="padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
-                            <option value="">Tous les niveaux</option>
-                            {% for niv in niveaux %}
-                                <option value="{{ niv }}" {% if queryParams.niveau_requis == niv %}selected{% endif %}>{{ niv }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <div>
-                            <select id="duree_plage" name="duree_plage" onchange="updateAdminDuree(this.value)" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1e293b; color: white;">
-                                <option value="">Toutes les durées</option>
-                                <option value="1-2" {% if queryParams.duree_plage == '1-2' %}selected{% endif %}>Stage court (1-2 mois)</option>
-                                <option value="3-4" {% if queryParams.duree_plage == '3-4' %}selected{% endif %}>Stage moyen (3-4 mois)</option>
-                                <option value="5-6" {% if queryParams.duree_plage == '5-6' %}selected{% endif %}>Stage long (5-6 mois)</option>
-                                <option value="12-12" {% if queryParams.duree_plage == '12-12' %}selected{% endif %}>Alternance (1 an)</option>
-                                <option value="24-24" {% if queryParams.duree_plage == '24-24' %}selected{% endif %}>Alternance (2 ans)</option>
-                            </select>
-                            <input type="hidden" name="duree_min" id="duree_min" value="{{ queryParams.duree_min|default('') }}">
-                            <input type="hidden" name="duree_max" id="duree_max" value="{{ queryParams.duree_max|default('') }}">
-                        </div>
                     </div>
                 {% endif %}
 
@@ -91,6 +82,7 @@
             </form>
         </div>
 
+        {# --- LISTE DES RÉSULTATS --- #}
         <div style="display: flex; flex-direction: column; gap: 15px;">
             {% for item in items %}
             <article class="card" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 15px 25px;">
@@ -108,13 +100,14 @@
                     </div>
                     
                     <div>
-                        <h4 style="margin: 0; color: #fff; font-size: 1.15rem;">
+                        <h4 style="margin: 0; font-size: 1.15rem;">
+                            {# LES NOMS DEVIENNENT DES LIENS CLIQUABLES BLEUS #}
                             {% if type == 'entreprises' %}
-                                {{ item.nom }}
+                                <a href="/entreprise/{{ item.id_entreprise }}" style="color: #38bdf8; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{ item.nom }}</a>
                             {% elseif type == 'offres' %}
-                                {{ item.titre }} <span style="font-size: 0.9rem; color: #94a3b8; font-weight: normal;">chez {{ item.entreprise_nom }}</span>
+                                <a href="/offre/{{ item.id_offre }}" style="color: #38bdf8; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{ item.titre }}</a> <span style="font-size: 0.9rem; color: #94a3b8; font-weight: normal;">chez {{ item.entreprise_nom }}</span>
                             {% else %}
-                                {{ item.nom|upper }} {{ item.prenom }}
+                                <a href="/profil/{{ item.id_user }}" style="color: #38bdf8; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{ item.nom|upper }} {{ item.prenom }}</a>
                             {% endif %}
                         </h4>
                         
@@ -124,42 +117,13 @@
                             {% elseif type == 'entreprises' %}
                                 📍 Entreprise partenaire
                             {% elseif type == 'offres' %}
-                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 0.85rem; color: #cbd5e1;">
-                                    <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">📍 {{ item.ville|default('N/A') }}</span>
-                                    
-                                    {% if item.type_contrat %}
-                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">📜 {{ item.type_contrat }}</span>
-                                    {% endif %}
-                                    
-                                    {% if item.niveau_requis %}
-                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">🎓 {{ item.niveau_requis }}</span>
-                                    {% endif %}
-                                    
-                                    {% if item.duree and item.duree > 0 %}
-                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">⏱️ 
-                                            {% if item.duree >= 12 %}
-                                                {% set annees = (item.duree / 12)|round(0, 'floor') %}
-                                                {% set mois_restants = item.duree % 12 %}    
-                                                {{ annees }} an{{ annees > 1 ? 's' : '' }}{% if mois_restants > 0 %} {{ mois_restants }} mois{% endif %}
-                                            {% else %}
-                                                {{ item.duree }} mois
-                                            {% endif %}
-                                        </span>
-                                    {% else %}
-                                        <span style="background: rgba(255,107,107,0.1); color: #ff6b6b; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,107,107,0.3);">⏱️ Durée à préciser</span>
-                                    {% endif %}
-                                    
-                                    {% if item.remuneration %}
-                                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">💰 {{ item.remuneration }}€/m</span>
-                                    {% endif %}
-                                </div>
+                                <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">📍 {{ item.ville|default('N/A') }}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    
                     {% if type == 'etudiants' %}
                         {% set colorStatut = item.statut_recherche == 'Stage trouvé' ? '#10b981' : (item.statut_recherche == 'En entretien' ? '#f59e0b' : '#38bdf8') %}
                         <span class="badge" style="background: {{ colorStatut }}22; color: {{ colorStatut }}; border: 1px solid {{ colorStatut }}88; padding: 8px 15px; font-weight: bold; white-space: nowrap;">
@@ -183,6 +147,7 @@
             {% endfor %}
         </div>
 
+        {# --- PAGINATION --- #}
         {% if totalPages is defined and totalPages > 0 %}
         <div class="pagination">
             <a href="?page=1{{ queryString }}" class="{{ currentPage == 1 ? 'disabled' : '' }}">«</a>
@@ -198,16 +163,4 @@
         {% endif %}
     </div>
 </section>
-
-{% if type == 'offres' %}
-<script>
-    function updateAdminDuree(value) {
-        if (!value) { document.getElementById('duree_min').value = ''; document.getElementById('duree_max').value = ''; return; }
-        var plage = value.split('-');
-        document.getElementById('duree_min').value = plage[0];
-        document.getElementById('duree_max').value = plage[1];
-    }
-</script>
-{% endif %}
-
 {% endblock %}

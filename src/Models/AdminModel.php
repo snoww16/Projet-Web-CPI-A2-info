@@ -166,4 +166,47 @@ public function getUtilisateurByEmail($email) {
     $stmt->execute([$email]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+// Dans AdminModel.php
+
+public function getEntrepriseById($id) {
+    $stmt = $this->db->prepare("SELECT * FROM Entreprise WHERE id_entreprise = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+public function modifierEntreprise($id, $nom, $description, $email, $telephone) {
+    $sql = "UPDATE Entreprise SET nom = ?, description = ?, email_contact = ?, telephone = ? WHERE id_entreprise = ?";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([$nom, $description, $email, $telephone, $id]);
+}
+
+// Optionnel mais utile pour afficher les stats d'une entreprise
+public function getStatsEntreprise($id) {
+    $sql = "SELECT 
+                (SELECT COUNT(*) FROM Offre WHERE id_entreprise = ?) as nb_offres,
+                (SELECT AVG(note) FROM Evaluation_Entreprise WHERE id_entreprise = ?) as note_moyenne";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$id, $id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+public function updatePasswordAndFirstLogin($id_user, $new_password) {
+    $hash = password_hash($new_password, PASSWORD_DEFAULT);
+    $sql = "UPDATE Utilisateur SET mot_de_passe = ?, premiere_connexion = 0 WHERE id_user = ?";
+    return $this->db->prepare($sql)->execute([$hash, $id_user]);
+}
+
+// Pour enregistrer le jeton de récupération
+public function setResetToken($email, $token, $expires) {
+    $sql = "UPDATE Utilisateur SET reset_token = ?, reset_expires = ? WHERE email = ?";
+    return $this->db->prepare($sql)->execute([$token, $expires, $email]);
+}
+
+// Pour vérifier le jeton quand l'utilisateur clique sur le lien
+public function getUserByToken($token) {
+    $sql = "SELECT * FROM Utilisateur WHERE reset_token = ? AND reset_expires > NOW()";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$token]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 }
