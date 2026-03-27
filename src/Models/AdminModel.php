@@ -20,10 +20,33 @@ class AdminModel {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Remplace ta fonction existante par celle-ci (pour lier le Pilote !)
     public function getUtilisateurById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE id_user = ?");
+        $sql = "SELECT u.*, p.nom as pilote_nom, p.prenom as pilote_prenom 
+                FROM Utilisateur u 
+                LEFT JOIN Utilisateur p ON u.id_pilote = p.id_user 
+                WHERE u.id_user = ?";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    // Ajoute celles-ci à la suite :
+    public function updateAvatar($id, $path) {
+        $stmt = $this->db->prepare("UPDATE Utilisateur SET photo_path = ? WHERE id_user = ?");
+        return $stmt->execute([$path, $id]);
+    }
+
+    public function getStudentsByPilote($id_pilote) {
+        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE id_pilote = ? ORDER BY nom ASC");
+        $stmt->execute([$id_pilote]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getEntrepriseById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM Entreprise WHERE id_entreprise = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getUtilisateursByRoleFiltered($role, $filters = [], $limit = 15, $offset = 0) {
