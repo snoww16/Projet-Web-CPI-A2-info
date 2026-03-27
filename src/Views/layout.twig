@@ -149,5 +149,30 @@
             }
         });
     </script>
+
+    <script>
+    function toggleWishlistAjax(event, btn, offreId) {
+        // 1. On empêche la page de se recharger brusquement
+        event.preventDefault(); 
+        
+        let icon = btn.innerText.trim();
+        let isHearted = (icon === '❤️');
+        
+        // 2. On change le visuel instantanément (La carte reste à l'écran !)
+        if (isHearted) {
+            btn.innerText = '🤍';
+            btn.style.color = 'rgba(255, 255, 255, 0.2)';
+        } else {
+            btn.innerText = '❤️';
+            btn.style.color = '#ff6b6b';
+        }
+
+        // 3. On envoie l'ordre à la base de données en arrière-plan (silencieusement)
+        fetch('/wishlist/toggle?id=' + offreId, {
+            method: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        });
+    }
+</script>
 </body>
 </html>
