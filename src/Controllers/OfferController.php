@@ -58,26 +58,34 @@ class OfferController extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$deja_postule) {
             $uploadDir = __DIR__ . '/../../public/uploads/candidatures/';
+            if (!is_dir($uploadDir)) { mkdir($uploadDir, 0775, true); }
             $cv_path = ''; $lm_path = '';
 
+            // --- GESTION DU CV (PDF et PNG) ---
             if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
-                if (strtolower(pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION)) !== 'pdf') { $erreur = "Le CV doit être au format PDF."; }
-                else {
-                    $cv_name = 'cv_' . $_SESSION['id_user'] . '_' . $id . '_' . uniqid() . '.pdf';
+                $ext_cv = strtolower(pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext_cv, ['pdf', 'png'])) { 
+                    $erreur = "Le CV doit être au format PDF ou PNG."; 
+                } else {
+                    $cv_name = 'cv_' . $_SESSION['id_user'] . '_' . $id . '_' . uniqid() . '.' . $ext_cv;
                     move_uploaded_file($_FILES['cv']['tmp_name'], $uploadDir . $cv_name);
                     $cv_path = '/uploads/candidatures/' . $cv_name;
                 }
             } else { $erreur = "Le CV est obligatoire."; }
 
+            // --- GESTION DE LA LM (PDF et PNG) ---
             if (!$erreur && isset($_FILES['lm']) && $_FILES['lm']['error'] === UPLOAD_ERR_OK) {
-                if (strtolower(pathinfo($_FILES['lm']['name'], PATHINFO_EXTENSION)) !== 'pdf') { $erreur = "La lettre de motivation doit être au format PDF."; }
-                else {
-                    $lm_name = 'lm_' . $_SESSION['id_user'] . '_' . $id . '_' . uniqid() . '.pdf';
+                $ext_lm = strtolower(pathinfo($_FILES['lm']['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext_lm, ['pdf', 'png'])) { 
+                    $erreur = "La lettre de motivation doit être au format PDF ou PNG."; 
+                } else {
+                    $lm_name = 'lm_' . $_SESSION['id_user'] . '_' . $id . '_' . uniqid() . '.' . $ext_lm;
                     move_uploaded_file($_FILES['lm']['tmp_name'], $uploadDir . $lm_name);
                     $lm_path = '/uploads/candidatures/' . $lm_name;
                 }
             } else if (!$erreur) { $erreur = "La lettre de motivation est obligatoire."; }
 
+            // --- VALIDATION FINALE ---
             if (!$erreur) {
                 $offerModel->applyForOffer($id, $_SESSION['id_user'], $cv_path, $lm_path, $_POST['message'] ?? '');
                 $succes = true; $deja_postule = true; 

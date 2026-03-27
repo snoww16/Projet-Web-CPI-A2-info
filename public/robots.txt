@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /profil/
+Disallow: /mes-candidatures
+Disallow: /mes-favoris
+
+Sitemap: https://app.stage.local/sitemap.xml
