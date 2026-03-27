@@ -5,9 +5,12 @@ use PDO;
 
 class EntrepriseModel extends Model {
     
-    // 1. Récupère les entreprises avec une limite (15) et un décalage (la page)
+    // 1. Récupère les entreprises avec une limite et un décalage
     public function searchEntreprises($filtres = [], $limit = 15, $offset = 0) {
-        $sql = "SELECT id_entreprise AS id, nom, secteur, ville, description FROM Entreprise WHERE 1=1";
+        $sql = "SELECT id_entreprise AS id, nom, secteur, ville, description, logo_path,
+                       (SELECT ROUND(AVG(note), 1) FROM Evaluation_Entreprise WHERE id_entreprise = Entreprise.id_entreprise) AS moyenne_avis,
+                       (SELECT COUNT(*) FROM Evaluation_Entreprise WHERE id_entreprise = Entreprise.id_entreprise) AS nb_avis
+                FROM Entreprise WHERE 1=1";
         $params = [];
 
         if (!empty($filtres['q'])) {
@@ -24,7 +27,6 @@ class EntrepriseModel extends Model {
             $params['secteur'] = '%' . $filtres['secteur'] . '%';
         }
 
-        // Ajout de la pagination à la requête SQL
         $sql .= " ORDER BY nom ASC LIMIT $limit OFFSET $offset";
         
         $stmt = $this->db->prepare($sql);
@@ -32,7 +34,7 @@ class EntrepriseModel extends Model {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 2. Compte le total exact (sans le LIMIT) pour générer les boutons de pages
+    // 2. Compte le total exact pour générer les boutons de pages
     public function countEntreprises($filtres = []) {
         $sql = "SELECT COUNT(id_entreprise) as total FROM Entreprise WHERE 1=1";
         $params = [];

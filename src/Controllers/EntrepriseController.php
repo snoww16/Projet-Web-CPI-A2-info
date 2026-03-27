@@ -43,6 +43,7 @@ class EntrepriseController extends Controller {
     public function details($id) {
         $adminModel = new AdminModel();
         $offerModel = new OfferModel();
+        $entrepriseModel = new EntrepriseModel();
 
         $entreprise = $adminModel->getEntrepriseById($id);
         if (!$entreprise) { 
@@ -51,16 +52,20 @@ class EntrepriseController extends Controller {
             exit; 
         }
 
-        // On récupère les 5 dernières offres de l'entreprise
+        // On récupère la moyenne et les offres via la requête déjà existante
+        $stats = $adminModel->getStatsEntreprise($id);
+        $entreprise['moyenne_avis'] = $stats['note_moyenne'] ? round($stats['note_moyenne'], 1) : null;
+
         $offres = $offerModel->getOffresByEntreprise($id, 5);
+        $evaluations = $entrepriseModel->getEvaluationsByEntreprise($id);
+        $entreprise['nb_avis'] = count($evaluations);
         
-        // On récupère la wishlist pour allumer les cœurs sur les offres affichées
         $wishlist_ids = isset($_SESSION['id_user']) ? $offerModel->getWishlistIdsByUser($_SESSION['id_user']) : [];
 
-        // Rendu vers le bon fichier récupéré !
         $this->render('profile/entreprise.twig', [
             'entreprise' => $entreprise,
             'offres' => $offres,
+            'evaluations' => $evaluations,
             'wishlist' => $wishlist_ids 
         ]);
     }

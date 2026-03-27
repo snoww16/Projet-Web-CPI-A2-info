@@ -13,7 +13,6 @@
 <section class="zone-principale">
     <div class="container">
         <div class="bloc-contenu bloc-sans-survol">
-            
             <div class="mise-en-page-recherche">
                 
                 <aside class="zone-filtres" id="zone-filtres">
@@ -57,9 +56,14 @@
                                 
                                 <div>
                                     <h4 style="margin: 0 0 5px 0; font-size: 1.2rem; color: #fff;">{{ entreprise.nom }}</h4>
-                                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
                                         {% if entreprise.ville %}<span class="badge" style="font-size: 0.75rem; padding: 2px 8px; background: rgba(255,255,255,0.05);">📍 {{ entreprise.ville }}</span>{% endif %}
                                         {% if entreprise.secteur %}<span class="badge" style="font-size: 0.75rem; padding: 2px 8px; background: rgba(255,255,255,0.05);">🏢 {{ entreprise.secteur }}</span>{% endif %}
+                                        {% if entreprise.nb_avis > 0 %}
+                                            <span class="badge" style="font-size: 0.75rem; padding: 2px 8px; background: rgba(250, 204, 21, 0.1); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3);" title="{{ entreprise.nb_avis }} avis">
+                                                ⭐ {{ entreprise.moyenne_avis }}
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

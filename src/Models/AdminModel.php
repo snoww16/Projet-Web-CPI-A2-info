@@ -22,9 +22,14 @@ class AdminModel {
     }
 
     public function getUtilisateurById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM Utilisateur WHERE id_user = ?");
+        // On utilise un LEFT JOIN pour relier l'étudiant à son propre pilote dans la même table
+        $sql = "SELECT u.*, p.nom AS pilote_nom, p.prenom AS pilote_prenom 
+                FROM Utilisateur u 
+                LEFT JOIN Utilisateur p ON u.id_pilote = p.id_user 
+                WHERE u.id_user = ?";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getUtilisateursByRoleFiltered($role, $filters = [], $limit = 15, $offset = 0) {

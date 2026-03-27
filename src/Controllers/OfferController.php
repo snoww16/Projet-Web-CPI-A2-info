@@ -37,9 +37,7 @@ class OfferController extends Controller {
         $offerModel = new OfferModel();
         $vraie_offre = $offerModel->getOfferById($id);
         if ($vraie_offre) {
-            $entrepriseModel = new EntrepriseModel();
-            $evaluations = $entrepriseModel->getEvaluationsByEntreprise($vraie_offre['id_entreprise']);
-            $this->render('offers/details.twig', ['offre' => $vraie_offre, 'evaluations' => $evaluations]);
+            $this->render('offers/details.twig', ['offre' => $vraie_offre]);
         } else {
             http_response_code(404); echo "<h1>Erreur 404 - Offre introuvable.</h1>";
         }
